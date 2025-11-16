@@ -40,7 +40,7 @@ export const Perks: React.FC<PerksProps> = ({ currentPoints, perks, iconMap, the
                                 {isUnlocked ? (
                                     <span className="text-xs font-bold text-green-400">UNLOCKED</span>
                                 ) : (
-                                    <span className="text-xs font-medium text-slate-500">{currentPoints}/{perk.requiredPoints} pts</span>
+                                    <span className="text-xs font-medium text-slate-500">{currentPoints}/{perk.requiredPoints} TC</span>
                                 )}
                             </div>
                         </div>

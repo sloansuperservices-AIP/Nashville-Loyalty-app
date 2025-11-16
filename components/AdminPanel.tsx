@@ -21,7 +21,7 @@ interface AdminPanelProps {
     iconMap: { [key: string]: React.ReactNode };
 }
 
-const challengeIconOptions = ['MapPin', 'Camera', 'VideoCamera', 'Receipt', 'AtSymbol'];
+const challengeIconOptions = ['MapPin', 'Camera', 'VideoCamera', 'Receipt', 'AtSymbol', 'CalendarDays', 'ViewfinderCircle'];
 const perkAndDealIconOptions = ['MusicNote', 'Ticket', 'Gift', 'Crown', 'QrCode'];
 
 const fileToBase64 = (file: File): Promise<string> =>
@@ -49,8 +49,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        const numericFields = ['points', 'requiredPoints', 'scanCount', 'capacity', 'quickRideBaseFare', 'tourHourlyRate'];
-        setFormState((prev: any) => ({ ...prev, [name]: numericFields.includes(name) ? Number(value) : value }));
+        const targetType = (e.target as HTMLInputElement).type;
+
+        if (targetType === 'number') {
+             // Allow empty string for clearing the field, otherwise convert to number
+            setFormState((prev: any) => ({ ...prev, [name]: value === '' ? '' : parseFloat(value) }));
+        } else {
+            setFormState((prev: any) => ({ ...prev, [name]: value }));
+        }
     };
 
     const handleThemeChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -156,13 +162,29 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
         <form onSubmit={handleChallengeSubmit} className="space-y-4">
              <div><label className="block text-sm font-medium text-slate-300">Venue Name</label><input type="text" name="venueName" value={formState.venueName || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" required /></div>
              <div><label className="block text-sm font-medium text-slate-300">Description</label><textarea name="description" value={formState.description || ''} onChange={handleInputChange} rows={3} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" required /></div>
-             <div><label className="block text-sm font-medium text-slate-300">Points</label><input type="number" name="points" value={formState.points || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" required /></div>
+             <div><label className="block text-sm font-medium text-slate-300">Address</label><input type="text" name="address" value={formState.address || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="e.g., 123 Music Row, Nashville, TN" /></div>
+             <div><label className="block text-sm font-medium text-slate-300">Tour Cash Award</label><input type="number" name="points" value={formState.points || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" required /></div>
              <div><label className="block text-sm font-medium text-slate-300">Challenge Type</label><select name="type" value={formState.type || ChallengeType.GPS} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">{Object.values(ChallengeType).map(t => <option key={t} value={t}>{t}</option>)}</select></div>
-             {formState.type === ChallengeType.Social && <>
-                <div><label className="block text-sm font-medium text-slate-300">Validation Tag (e.g., @username)</label><input type="text" name="validationTag" value={formState.validationTag || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" /></div>
-                <div><label className="block text-sm font-medium text-slate-300">Social URL</label><input type="url" name="socialUrl" value={formState.socialUrl || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" /></div>
-             </>}
+             {formState.type === ChallengeType.Receipt && (
+                <div><label className="block text-sm font-medium text-slate-300">Required Spend Amount ($)</label><input type="number" step="0.01" name="requiredAmount" value={formState.requiredAmount || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="e.g., 25.00" /></div>
+             )}
+             {formState.type === ChallengeType.Social && (
+                <>
+                    <div><label className="block text-sm font-medium text-slate-300">Validation Tag (e.g., @username)</label><input type="text" name="validationTag" value={formState.validationTag || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" /></div>
+                    <div><label className="block text-sm font-medium text-slate-300">Social URL</label><input type="url" name="socialUrl" value={formState.socialUrl || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" /></div>
+                </>
+             )}
+             {formState.type === ChallengeType.Booking && (
+                <div><label className="block text-sm font-medium text-slate-300">Booking Email</label><input type="email" name="bookingEmail" value={formState.bookingEmail || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="booking@example.com" /></div>
+             )}
+             {formState.type === ChallengeType.QR_CODE && (
+                <div><label className="block text-sm font-medium text-slate-300">QR Validation Data</label><input type="text" name="qrValidationData" value={formState.qrValidationData || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="SECRET_CODE_123" /></div>
+             )}
              <div><label className="block text-sm font-medium text-slate-300">Icon</label><select name="iconName" value={formState.iconName || challengeIconOptions[0]} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">{challengeIconOptions.map(name => <option key={name} value={name}>{name}</option>)}</select></div>
+             <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-sm font-medium text-slate-300">Latitude</label><input type="number" step="any" name="latitude" value={formState.latitude || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="e.g., 36.1627" /></div>
+                <div><label className="block text-sm font-medium text-slate-300">Longitude</label><input type="number" step="any" name="longitude" value={formState.longitude || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="e.g., -86.7751" /></div>
+             </div>
             <div className="flex justify-end space-x-3 pt-4">
                 <button type="button" onClick={closeForm} className="px-4 py-2 bg-slate-600 text-white font-bold rounded-md hover:bg-slate-500 transition-colors">Cancel</button>
                 <button type="submit" style={{backgroundColor: themeSettings.primaryColor}} className="px-4 py-2 text-white font-bold rounded-md hover:opacity-90 transition-colors">Save Challenge</button>
@@ -174,8 +196,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
         <form onSubmit={handlePerkSubmit} className="space-y-4">
              <div><label className="block text-sm font-medium text-slate-300">Perk Name</label><input type="text" name="name" value={formState.name || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" required /></div>
              <div><label className="block text-sm font-medium text-slate-300">Description</label><textarea name="description" value={formState.description || ''} onChange={handleInputChange} rows={3} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" required /></div>
-             <div><label className="block text-sm font-medium text-slate-300">Required Points</label><input type="number" name="requiredPoints" value={formState.requiredPoints || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" required /></div>
+             <div><label className="block text-sm font-medium text-slate-300">Address</label><input type="text" name="address" value={formState.address || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="e.g., 123 Music Row, Nashville, TN" /></div>
+             <div><label className="block text-sm font-medium text-slate-300">Required Tour Cash</label><input type="number" name="requiredPoints" value={formState.requiredPoints || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" required /></div>
              <div><label className="block text-sm font-medium text-slate-300">Icon</label><select name="iconName" value={formState.iconName || perkAndDealIconOptions[0]} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">{perkAndDealIconOptions.map(name => <option key={name} value={name}>{name}</option>)}</select></div>
+             <div className="grid grid-cols-2 gap-4">
+                <div><label className="block text-sm font-medium text-slate-300">Latitude</label><input type="number" step="any" name="latitude" value={formState.latitude || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="e.g., 36.1627" /></div>
+                <div><label className="block text-sm font-medium text-slate-300">Longitude</label><input type="number" step="any" name="longitude" value={formState.longitude || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder="e.g., -86.7751" /></div>
+             </div>
              <div className="flex justify-end space-x-3 pt-4">
                 <button type="button" onClick={closeForm} className="px-4 py-2 bg-slate-600 text-white font-bold rounded-md hover:bg-slate-500 transition-colors">Cancel</button>
                 <button type="submit" style={{backgroundColor: themeSettings.primaryColor}} className="px-4 py-2 text-white font-bold rounded-md hover:opacity-90 transition-colors">Save Perk</button>
@@ -199,7 +226,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
 
      const renderUserForm = () => (
         <form onSubmit={handleUserSubmit} className="space-y-4">
-            <div><label className="block text-sm font-medium text-slate-300">Username</label><input type="text" name="username" value={formState.username || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" required /></div>
+            <div><label className="block text-sm font-medium text-slate-300">Email</label><input type="email" name="email" value={formState.email || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" required /></div>
             <div><label className="block text-sm font-medium text-slate-300">Password</label><input type="password" name="password" value={formState.password || ''} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500" placeholder={'id' in editingItem ? 'Enter new password' : ''} required={'id' in editingItem ? false : true} /></div>
             <div><label className="block text-sm font-medium text-slate-300">Role</label><select name="role" value={formState.role || Role.Guest} onChange={handleInputChange} className="mt-1 block w-full bg-slate-700 border border-slate-600 rounded-md shadow-sm py-2 px-3 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500">{Object.values(Role).map(r => <option key={r} value={r}>{r}</option>)}</select></div>
             {editingItem && 'id' in editingItem && (
@@ -292,9 +319,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
                                  <div key={u.id} className="bg-slate-700/50 p-3 rounded-lg flex items-center justify-between">
                                      <div className="flex items-center">
                                          <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center mr-3 text-amber-400 font-bold text-lg">{index + 1}</div>
-                                         <p className="font-semibold text-slate-100">{u.username}</p>
+                                         <p className="font-semibold text-slate-100">{u.email}</p>
                                      </div>
-                                     <p style={{color: themeSettings.secondaryColor}} className="font-bold">{u.points} pts</p>
+                                     <p style={{color: themeSettings.secondaryColor}} className="font-bold">{u.points} TC</p>
                                  </div>
                              ))}
                          </div>
@@ -393,8 +420,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
                                  <div className="flex items-center">
                                      <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center mr-3 text-amber-400 font-bold text-lg">{index + 1}</div>
                                      <div>
-                                         <p className="font-semibold text-slate-100">{u.username}</p>
-                                         <p className="text-xs text-slate-400">{u.points} pts</p>
+                                         <p className="font-semibold text-slate-100">{u.email}</p>
+                                         <p className="text-xs text-slate-400">{u.points} TC</p>
                                      </div>
                                  </div>
                                  <div className="flex space-x-2">
@@ -442,7 +469,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
                                     <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center mr-3" style={{color: themeSettings.primaryColor}}>{iconMap[p.iconName]}</div>
                                     <div>
                                         <p className="font-semibold text-slate-100">{p.name}</p>
-                                        <p className="text-xs text-slate-400">{p.requiredPoints} pts</p>
+                                        <p className="text-xs text-slate-400">{p.requiredPoints} TC</p>
                                     </div>
                                 </div>
                                 <div className="flex space-x-2">

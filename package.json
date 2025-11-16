@@ -1,5 +1,5 @@
 {
-  "name": "copy-of-rockstar-hospitality-pass",
+  "name": "v2--rockstar-hospitality-pass",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,6 +14,7 @@
     "@google/genai": "^0.15.0",
     "leaflet": "^1.9.4",
     "react-leaflet": "^4.2.1",
+    "leaflet.markercluster": "^1.5.3",
     "qrcode": "^1.5.3",
     "recharts": "^2.12.7",
     "html5-qrcode": "^2.3.8"

@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 export enum ChallengeType {
   GPS = 'GPS',
@@ -21,6 +21,10 @@ export interface Challenge {
   socialUrl?: string; // e.g. URL to the social media profile
   bookingEmail?: string; // e.g., 'booking@example.com'
   qrValidationData?: string; // e.g., 'SECRET_CODE_123'
+  requiredAmount?: number; // For receipt validation
+  latitude?: number;
+  longitude?: number;
+  address?: string;
 }
 
 export interface UserRank {
@@ -35,6 +39,9 @@ export interface Perk {
   description: string;
   requiredPoints: number;
   iconName: string;
+  latitude?: number;
+  longitude?: number;
+  address?: string;
 }
 
 export interface PartnerDeal {
@@ -53,9 +60,8 @@ export enum Role {
 
 export interface User {
   id: number;
-  username: string;
-  // Fix: Corrected typo from `password; string;` to `password: string;` to properly define the type. This resolves errors in App.tsx related to the User type definition.
-  password: string; // In a real app, this would be a hash
+  email: string;
+  password?: string; // In a real app, this would be a hash
   role: Role;
   points: number;
   completedChallengeIds: Set<number>;
