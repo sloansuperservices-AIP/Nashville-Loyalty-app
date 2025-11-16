@@ -124,8 +124,9 @@ const getInitialAppConfig = () => {
         const item = window.localStorage.getItem('rockstar_app_config');
         if (item) {
             const savedConfig = JSON.parse(item);
-            // Merge to ensure new properties from INITIAL_APP_CONFIG are added if they don't exist in saved data
-            return { ...INITIAL_APP_CONFIG, ...savedConfig };
+            // Deep merge theme settings to ensure new default properties are applied
+            const mergedTheme = { ...DEFAULT_THEME_SETTINGS, ...(savedConfig.theme || {}) };
+            return { ...INITIAL_APP_CONFIG, ...savedConfig, theme: mergedTheme };
         }
         return INITIAL_APP_CONFIG;
     } catch (error) {
