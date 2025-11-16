@@ -40,28 +40,30 @@ const iconMap: { [key: string]: React.ReactNode } = {
 
 // --- Initial Data Definitions ---
 const INITIAL_CHALLENGES: Challenge[] = [
-  { id: 1, venueName: "The Vinyl Tap", description: "Check-in at the bar.", points: 20, type: ChallengeType.GPS, iconName: 'MapPin' },
-  { id: 2, venueName: "Miss Kelly’s Karaoke", description: "Submit a video of you singing your heart out.", points: 35, type: ChallengeType.Video, iconName: 'VideoCamera' },
-  { id: 3, venueName: "Rock Shop", description: "Spend over $25 on some cool merch.", points: 50, type: ChallengeType.Receipt, iconName: 'Receipt' },
-  { id: 7, venueName: "Secret Speakeasy", description: "Find the hidden QR code inside the venue.", points: 75, type: ChallengeType.QR_CODE, iconName: 'ViewfinderCircle', qrValidationData: 'NASH_ROCK_SUITE_SECRET_CODE' },
-  { id: 4, venueName: "The Echo Room", description: "Check-in to the legendary music hall.", points: 20, type: ChallengeType.GPS, iconName: 'MapPin' },
-  { id: 5, venueName: "Skull’s Rainbow Room", description: "Post an Instagram pic with their famous neon sign. Tag @skullsrainbowroom.", points: 30, type: ChallengeType.Social, iconName: 'AtSymbol', validationTag: '@skullsrainbowroom', socialUrl: 'https://www.instagram.com/skullsrainbowroom/' },
-  { id: 6, venueName: "Rowdy Party Bus", description: "Request to book the party bus for your crew.", points: 100, type: ChallengeType.Booking, iconName: 'CalendarDays', bookingEmail: 'allinpropertiesnash@gmail.com' },
+  { id: 1, venueName: "The Vinyl Tap", description: "Check-in at the bar.", points: 20, type: ChallengeType.GPS, iconName: 'MapPin', position: [36.1613, -86.7785] },
+  { id: 2, venueName: "Miss Kelly’s Karaoke", description: "Submit a video of you singing your heart out.", points: 35, type: ChallengeType.Video, iconName: 'VideoCamera', position: [36.1633, -86.7801] },
+  { id: 3, venueName: "Rock Shop", description: "Spend over $25 on some cool merch.", points: 50, type: ChallengeType.Receipt, iconName: 'Receipt', requiredAmount: 25, position: [36.1623, -86.7779] },
+  { id: 7, venueName: "Secret Speakeasy", description: "Find the hidden QR code inside the venue.", points: 75, type: ChallengeType.QR_CODE, iconName: 'ViewfinderCircle', qrValidationData: 'NASH_ROCK_SUITE_SECRET_CODE', position: [36.1600, -86.7745] },
+  { id: 4, venueName: "The Echo Room", description: "Check-in to the legendary music hall.", points: 20, type: ChallengeType.GPS, iconName: 'MapPin', position: [36.1645, -86.7815] },
+  { id: 5, venueName: "Skull’s Rainbow Room", description: "Post an Instagram pic with their famous neon sign. Tag @skullsrainbowroom.", points: 30, type: ChallengeType.Social, iconName: 'AtSymbol', validationTag: '@skullsrainbowroom', socialUrl: 'https://www.instagram.com/skullsrainbowroom/', position: [36.1628, -86.7767] },
+  { id: 6, venueName: "Rowdy Party Bus", description: "Request to book the party bus for your crew.", points: 100, type: ChallengeType.Booking, iconName: 'CalendarDays', bookingEmail: 'allinpropertiesnash@gmail.com', position: [36.1658, -86.7844] },
+  { id: 8, venueName: "Guitars of the Stars", description: "Take a photo of the iconic giant guitar outside the shop.", points: 40, type: ChallengeType.Photo, iconName: 'Camera', position: [36.1605, -86.7788], referenceImageUrl: 'https://i.imgur.com/gG8P3Xy.jpg' },
+  { id: 9, venueName: "Skull’s Rainbow Room", description: "Spend over $100 for VIP status.", points: 100, type: ChallengeType.Receipt, iconName: 'Receipt', requiredAmount: 100, position: [36.1628, -86.7767] },
 ];
 
 const INITIAL_PERKS: Perk[] = [
-    { id: 1, name: 'Exclusive Playlist', description: 'Get access to a curated Rockstar playlist.', requiredPoints: 20, iconName: 'MusicNote' },
-    { id: 2, name: 'Free Drink', description: 'Enjoy a complimentary drink at The Vinyl Tap.', requiredPoints: 50, iconName: 'Ticket' },
-    { id: 3, name: '10% Off Merch', description: 'Receive 10% off at the Rock Shop.', requiredPoints: 100, iconName: 'Gift' },
-    { id: 4, name: 'VIP Lounge Access', description: 'One-time access to the VIP lounge at The Echo Room.', requiredPoints: 250, iconName: 'Crown' },
+    { id: 1, name: 'Exclusive Playlist', description: 'Get access to a curated Rockstar playlist.', requiredPoints: 20, iconName: 'MusicNote', position: [36.1613, -86.7785] },
+    { id: 2, name: 'Free Drink', description: 'Enjoy a complimentary drink at The Vinyl Tap.', requiredPoints: 50, iconName: 'Ticket', position: [36.1613, -86.7785] },
+    { id: 3, name: '10% Off Merch', description: 'Receive 10% off at the Rock Shop.', requiredPoints: 100, iconName: 'Gift', position: [36.1623, -86.7779] },
+    { id: 4, name: 'VIP Lounge Access', description: 'One-time access to the VIP lounge at The Echo Room.', requiredPoints: 250, iconName: 'Crown', position: [36.1645, -86.7815] },
 ];
 
 const INITIAL_DEALS: PartnerDeal[] = [
-    { id: 1, name: 'MJ Coffee', description: '20% off your entire order.', qrCodeData: 'MJCOFFEE_20_OFF', iconName: 'Gift', scanCount: 0 },
-    { id: 2, name: 'Coma Inducer', description: '20% off any purchase.', qrCodeData: 'COMA_INDUCER_20_OFF', iconName: 'Gift', scanCount: 0 },
-    { id: 3, name: 'Music City WIne', description: '10% off all local wines.', qrCodeData: 'MCW_10_PERCENT', iconName: 'Ticket', scanCount: 0 },
-    { id: 4, name: 'The Cellar', description: '2 for 1 drinks until 7pm.', qrCodeData: 'THE_CELLAR_BOGO_7PM', iconName: 'Ticket', scanCount: 0 },
-    { id: 5, name: 'Wild Beaver', description: 'One free mechanical bull ride.', qrCodeData: 'WILD_BEAVER_FREE_RIDE', iconName: 'Ticket', scanCount: 0 },
+    { id: 1, name: 'MJ Coffee', description: '20% off your entire order.', qrCodeData: 'MJCOFFEE_20_OFF', iconName: 'Gift', scanCount: 0, position: [36.1589, -86.7765] },
+    { id: 2, name: 'Coma Inducer', description: '20% off any purchase.', qrCodeData: 'COMA_INDUCER_20_OFF', iconName: 'Gift', scanCount: 0, position: [36.1601, -86.7789] },
+    { id: 3, name: 'Music City WIne', description: '10% off all local wines.', qrCodeData: 'MCW_10_PERCENT', iconName: 'Ticket', scanCount: 0, position: [36.1595, -86.7812] },
+    { id: 4, name: 'The Cellar', description: '2 for 1 drinks until 7pm.', qrCodeData: 'THE_CELLAR_BOGO_7PM', iconName: 'Ticket', scanCount: 0, position: [36.1618, -86.7758] },
+    { id: 5, name: 'Wild Beaver', description: 'One free mechanical bull ride.', qrCodeData: 'WILD_BEAVER_FREE_RIDE', iconName: 'Ticket', scanCount: 0, position: [36.1630, -86.7795] },
 ];
 
 const INITIAL_VEHICLES: Vehicle[] = [
@@ -155,6 +157,7 @@ const App: React.FC = () => {
     const [scanningChallenge, setScanningChallenge] = useState<Challenge | null>(null);
     const [bookingVehicle, setBookingVehicle] = useState<Vehicle | null>(null);
     const [bookingForPayment, setBookingForPayment] = useState<Booking | null>(null);
+    const [showMap, setShowMap] = useState(false);
 
     // --- Data Persistence ---
     useEffect(() => {
@@ -225,6 +228,20 @@ const App: React.FC = () => {
         reader.onerror = error => reject(error);
       });
 
+    // Helper function to convert a URL to a Gemini Part
+    async function urlToGenerativePart(url: string, mimeType: string) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const arrayBuffer = await blob.arrayBuffer();
+        const base64 = Buffer.from(arrayBuffer).toString('base64');
+        return {
+            inlineData: {
+                data: base64,
+                mimeType,
+            },
+        };
+    }
+
     const handleImageValidation = useCallback(async (challenge: Challenge, imageFile: File) => {
       if (!imageFile || validatingChallengeId) return;
 
@@ -233,36 +250,43 @@ const App: React.FC = () => {
       let promptText = '';
       let successMessage = '';
       let failureMessage = '';
-
-      if (challenge.type === ChallengeType.Receipt) {
-        promptText = `Analyze this receipt. The requirement is to spend over $25. Is the total amount on the receipt greater than or equal to $25.00? Respond with only 'YES' or 'NO'.`;
-        successMessage = 'Receipt approved! Points awarded.';
-        failureMessage = 'Validation Failed: The AI determined the receipt does not meet the $25 requirement. Please try again.';
-      } else if (challenge.type === ChallengeType.Social) {
-        promptText = `Analyze this screenshot of a social media post. Does it contain the text '${challenge.validationTag}'? Respond with only 'YES' or 'NO'.`;
-        successMessage = 'Social post verified! Points awarded.';
-        failureMessage = `Validation Failed: The AI could not find the tag '${challenge.validationTag}' in the screenshot. Please try again.`;
-      } else if (challenge.type === ChallengeType.Photo) {
-        promptText = `Analyze this photo for a scavenger hunt. Does it appear to be a legitimate photo taken by a person at a real-world location (like a bar, venue, or landmark)? Respond with only 'YES' or 'NO'.`;
-        successMessage = 'Photo submission accepted! Points awarded.';
-        failureMessage = 'Validation Failed: The AI determined this photo might not be suitable for the challenge. Please try again with a different picture.';
-      } else {
-        setValidatingChallengeId(null);
-        return;
-      }
+      const imageParts: any[] = [];
 
       try {
         const base64Image = await fileToBase64(imageFile);
+        imageParts.push({ inlineData: { mimeType: imageFile.type, data: base64Image } });
+
+        if (challenge.type === ChallengeType.Receipt && challenge.requiredAmount) {
+            promptText = `Analyze this receipt. Does it clearly show the name "${challenge.venueName}" and a total amount greater than or equal to $${challenge.requiredAmount}? Respond with only 'YES' or 'NO'.`;
+            successMessage = 'Receipt approved! Points awarded.';
+            failureMessage = `Validation Failed: The AI determined the receipt does not meet the requirements for ${challenge.venueName}. Please try again.`;
+        } else if (challenge.type === ChallengeType.Social && challenge.validationTag) {
+            promptText = `Analyze this screenshot of a social media post. Does it contain the text '${challenge.validationTag}'? Respond with only 'YES' or 'NO'.`;
+            successMessage = 'Social post verified! Points awarded.';
+            failureMessage = `Validation Failed: The AI could not find the tag '${challenge.validationTag}' in the screenshot. Please try again.`;
+        } else if (challenge.type === ChallengeType.Photo && challenge.referenceImageUrl) {
+            promptText = `Compare these two images. Does the first image (the user's submission) depict the same primary subject or landmark as the second image (the reference)? The angle, lighting, and other people in the photo do not need to match perfectly, but the core subject must be the same. Respond with only 'YES' or 'NO'.`;
+            successMessage = 'Photo submission accepted! Points awarded.';
+            failureMessage = 'Validation Failed: The AI determined this photo does not match the reference image. Please try again.';
+            // Assuming the reference image is a JPEG. Adjust if necessary.
+            const referenceImagePart = await urlToGenerativePart(challenge.referenceImageUrl, 'image/jpeg');
+            imageParts.push(referenceImagePart);
+        } else {
+            // Fallback for simple photo challenges without a reference
+            promptText = `Analyze this photo for a scavenger hunt. Does it appear to be a legitimate photo taken by a person at a real-world location (like a bar, venue, or landmark)? Respond with only 'YES' or 'NO'.`;
+            successMessage = 'Photo submission accepted! Points awarded.';
+            failureMessage = 'Validation Failed: The AI determined this photo might not be suitable for the challenge. Please try again with a different picture.';
+        }
+
+        if (!promptText) {
+            setValidatingChallengeId(null);
+            return;
+        }
 
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await ai.models.generateContent({
           model: 'gemini-2.5-flash',
-          contents: {
-            parts: [
-              { inlineData: { mimeType: imageFile.type, data: base64Image } },
-              { text: promptText }
-            ]
-          }
+          contents: { parts: [...imageParts, { text: promptText }] }
         });
 
         const resultText = response.text.trim().toUpperCase();
@@ -406,7 +430,16 @@ const App: React.FC = () => {
                                     progress={progress}
                                     themeSettings={themeSettings}
                                 />
+                                <button onClick={() => setShowMap(!showMap)} className="w-full mt-4 py-2 px-4 bg-slate-700 text-white font-bold rounded-md hover:bg-slate-600 transition-colors">
+                                    {showMap ? 'Hide Map' : 'Show Map'}
+                                </button>
                             </section>
+
+                            {showMap && (
+                                <section>
+                                    <Locations challenges={challenges} perks={perks} deals={deals} />
+                                </section>
+                            )}
 
                             <section>
                                 <VehicleScheduling vehicles={vehicles} onBook={setBookingVehicle} themeSettings={themeSettings} />

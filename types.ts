@@ -17,6 +17,9 @@ export interface Challenge {
   points: number;
   type: ChallengeType;
   iconName: string;
+  position: [number, number];
+  referenceImageUrl?: string;
+  requiredAmount?: number;
   validationTag?: string; // e.g. '@username' for social media
   socialUrl?: string; // e.g. URL to the social media profile
   bookingEmail?: string; // e.g., 'booking@example.com'
@@ -35,6 +38,7 @@ export interface Perk {
   description: string;
   requiredPoints: number;
   iconName: string;
+  position: [number, number];
 }
 
 export interface PartnerDeal {
@@ -44,6 +48,7 @@ export interface PartnerDeal {
   qrCodeData: string;
   iconName: string;
   scanCount: number;
+  position: [number, number];
 }
 
 export enum Role {
