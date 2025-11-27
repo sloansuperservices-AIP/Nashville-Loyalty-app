@@ -24,13 +24,43 @@ interface AdminPanelProps {
 const challengeIconOptions = ['MapPin', 'Camera', 'VideoCamera', 'Receipt', 'AtSymbol', 'CalendarDays', 'ViewfinderCircle'];
 const perkAndDealIconOptions = ['MusicNote', 'Ticket', 'Gift', 'Crown', 'QrCode'];
 
-const fileToBase64 = (file: File): Promise<string> =>
-      new Promise((resolve, reject) => {
+const resizeImage = (file: File, maxWidth: number = 800, maxHeight: number = 800, quality: number = 0.7): Promise<string> => {
+    return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = error => reject(error);
-      });
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target?.result as string;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                if (width > maxWidth || height > maxHeight) {
+                    if (width > height) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    } else {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL(file.type === 'image/png' ? 'image/png' : 'image/jpeg', quality));
+                } else {
+                     reject(new Error("Canvas context is null"));
+                }
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+};
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challenges, setChallenges, perks, setPerks, deals, setDeals, vehicles, setVehicles, themeSettings, setThemeSettings, onExit, onLogout, iconMap }) => {
     const [activeTab, setActiveTab] = useState('analytics');
@@ -67,16 +97,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
     const handleBgImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const base64 = await fileToBase64(file);
-            setThemeSettings(prev => ({ ...prev, backgroundImage: base64 }));
+            try {
+                const base64 = await resizeImage(file, 1024, 768, 0.6); // Reasonable size for background
+                setThemeSettings(prev => ({ ...prev, backgroundImage: base64 }));
+            } catch (error) {
+                console.error("Error resizing image:", error);
+                alert("Failed to process image.");
+            }
         }
     };
 
     const handleVehicleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const base64 = await fileToBase64(file);
-            setFormState((prev: any) => ({ ...prev, imageUrl: base64 }));
+            try {
+                const base64 = await resizeImage(file, 600, 400, 0.7); // Smaller size for vehicles
+                setFormState((prev: any) => ({ ...prev, imageUrl: base64 }));
+            } catch (error) {
+                console.error("Error resizing image:", error);
+                alert("Failed to process image.");
+            }
         }
     };
 

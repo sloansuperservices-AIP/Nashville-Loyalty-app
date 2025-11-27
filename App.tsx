@@ -166,6 +166,11 @@ const App: React.FC = () => {
             localStorage.setItem('rockstar_app_config', JSON.stringify(appConfig));
         } catch (error) {
             console.error("Failed to save data to localStorage:", error);
+            if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+                alert("Storage quota exceeded! Your changes were NOT saved. Please use smaller images or clear browser data.");
+            } else {
+                 alert("Failed to save changes. Please check your browser settings.");
+            }
         }
     }, [users, challenges, perks, deals, vehicles, bookings, themeSettings]);
 
