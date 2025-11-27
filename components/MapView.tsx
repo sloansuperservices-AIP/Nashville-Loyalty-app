@@ -34,6 +34,15 @@ const RockstarMansionIcon: React.FC<{ color: string }> = ({ color }) => (
     </svg>
 );
 
+interface MansionItem {
+    id: string;
+    type: 'mansion';
+    name: string;
+    description: string;
+    address: string;
+    latitude: number;
+    longitude: number;
+}
 
 export const MapView: React.FC<MapViewProps> = ({ challenges, perks, themeSettings }) => {
     const mapRef = useRef<L.Map | null>(null);
@@ -74,6 +83,11 @@ export const MapView: React.FC<MapViewProps> = ({ challenges, perks, themeSettin
             map.on('locationerror', () => {
                 console.log("Geolocation error.");
             });
+
+            // Invalidate size to ensure map renders correctly after resize
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 100);
         }
     }, []);
 
@@ -82,6 +96,9 @@ export const MapView: React.FC<MapViewProps> = ({ challenges, perks, themeSettin
         if (!mapRef.current) return;
         const map = mapRef.current;
 
+        // Ensure map resizes correctly if container changes
+        map.invalidateSize();
+
         // Add Rockstar Mansion Pin (always visible)
         const mansionLatLng: L.LatLngTuple = [36.1645, -86.7795];
         const isMansionSelected = selectedPin?.type === 'mansion' && selectedPin?.id === 'mansion-1';
@@ -89,23 +106,14 @@ export const MapView: React.FC<MapViewProps> = ({ challenges, perks, themeSettin
         const mansionIcon = L.divIcon({ html: mansionIconHtml, className: 'custom-pin-icon', iconSize: [80, 80], iconAnchor: [40, 80], popupAnchor: [0, -80] });
         const mansionMarker = L.marker(mansionLatLng, { icon: mansionIcon, zIndexOffset: 1000 }).addTo(map);
 
-        mansionMarker.bindPopup("", { className: 'custom-popup', closeButton: false, minWidth: 200 });
+        // Remove popup logic
+        mansionMarker.unbindPopup();
         
         mansionMarker.on('click', (e) => {
             if (!mapRef.current) return;
             setSelectedPin({ type: 'mansion', id: 'mansion-1' });
-
-            const mansionPopupContent = `
-                <div class="text-white">
-                    <h3 class="font-bold text-lg" style="color: ${themeSettings.secondaryColor}">The Rockstar Mansion</h3>
-                    <p class="text-slate-300 text-sm">210 3rd Ave N<br/>Your home base for this tour!</p>
-                </div>
-            `;
-            e.target.getPopup().setContent(mansionPopupContent);
-            e.target.openPopup();
             mapRef.current.flyTo(e.target.getLatLng(), map.getZoom(), { animate: true, duration: 0.5 });
         });
-        mansionMarker.on('popupclose', () => setSelectedPin(null));
         
         const markers = L.markerClusterGroup({
             iconCreateFunction: (cluster) => L.divIcon({ html: `<span>${cluster.getChildCount()}</span>`, className: 'marker-cluster-custom', iconSize: [40, 40] })
@@ -123,51 +131,13 @@ export const MapView: React.FC<MapViewProps> = ({ challenges, perks, themeSettin
             const markerLatLng = L.latLng(item.latitude, item.longitude);
             const marker = L.marker(markerLatLng, { icon: customIcon });
             
-            marker.bindPopup("", { className: 'custom-popup', closeButton: false, minWidth: 250 });
+            // Remove popup logic
+            marker.unbindPopup();
 
             marker.on('click', (e) => {
                 if (!mapRef.current) return;
                 setSelectedPin({ type: activeFilter, id: item.id });
-                
-                const isChallenge = activeFilter === 'challenges' && 'points' in item;
-                const directionsUrl = userLocation ? `https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${item.latitude},${item.longitude}` : '';
-
-                const popupContent = `
-                    <div class="text-white">
-                        <h3 class="font-bold text-lg" style="color: ${isChallenge ? themeSettings.primaryColor : themeSettings.secondaryColor}">${'venueName' in item ? item.venueName : item.name}</h3>
-                        <p class="text-slate-300 text-sm mt-1">${item.description}</p>
-                        ${item.address ? `<p class="text-slate-400 text-xs mt-2">${item.address}</p>` : ''}
-                        ${isChallenge ? `<p class="font-bold mt-2 text-base" style="color: ${themeSettings.primaryColor}">+${item.points} TC</p>` : ''}
-                        
-                        <div class="flex space-x-2 mt-3">
-                             ${isChallenge ? `
-                                <button 
-                                    class="flex-1 text-center px-3 py-2 text-sm font-bold text-white rounded-md transition-opacity hover:opacity-90" 
-                                    style="background-color: ${themeSettings.primaryColor};"
-                                >
-                                    Details
-                                </button>
-                            ` : ''}
-                            ${userLocation ? `
-                                <a 
-                                    href="${directionsUrl}"
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    class="flex-1 text-center px-3 py-2 text-sm font-bold text-white bg-slate-600 rounded-md transition-colors hover:bg-slate-500"
-                                >
-                                    Get Directions
-                                </a>
-                            ` : ''}
-                        </div>
-                    </div>
-                `;
-                e.target.getPopup().setContent(popupContent);
-                e.target.openPopup();
                 mapRef.current.flyTo(e.target.getLatLng(), map.getZoom(), { animate: true, duration: 0.5 });
-            });
-
-            marker.on('popupclose', () => {
-                setSelectedPin(null);
             });
 
             markers.addLayer(marker);
@@ -185,38 +155,93 @@ export const MapView: React.FC<MapViewProps> = ({ challenges, perks, themeSettin
         };
     }, [challenges, perks, themeSettings, activeFilter, selectedPin, userLocation]);
 
+    const getSelectedItem = () => {
+        if (!selectedPin) return null;
+        if (selectedPin.type === 'mansion') {
+            return {
+                type: 'mansion' as const,
+                title: "The Rockstar Mansion",
+                description: "Your home base for this tour!",
+                address: "210 3rd Ave N",
+                points: null,
+                latitude: 36.1645,
+                longitude: -86.7795
+            };
+        }
+        if (selectedPin.type === 'challenges') {
+            const item = challenges.find(c => c.id === selectedPin.id);
+            return item ? { ...item, type: 'challenge' as const, title: item.venueName, points: item.points } : null;
+        }
+        if (selectedPin.type === 'perks') {
+            const item = perks.find(p => p.id === selectedPin.id);
+            return item ? { ...item, type: 'perk' as const, title: item.name, points: null } : null;
+        }
+        return null;
+    };
+
+    const selectedItem = getSelectedItem();
+
     return (
-        <div className="h-full w-full relative">
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10 bg-slate-800/80 p-1 rounded-full flex space-x-1 backdrop-blur-sm">
-                <button
-                    onClick={() => setActiveFilter('challenges')}
-                    className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors ${activeFilter === 'challenges' ? 'text-white' : 'text-slate-300'}`}
-                    style={{ backgroundColor: activeFilter === 'challenges' ? themeSettings.primaryColor : 'transparent' }}
-                >
-                    Challenges
-                </button>
-                <button
-                    onClick={() => setActiveFilter('perks')}
-                    className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors ${activeFilter === 'perks' ? 'text-white' : 'text-slate-300'}`}
-                    style={{ backgroundColor: activeFilter === 'perks' ? themeSettings.secondaryColor : 'transparent' }}
-                >
-                    Perks
-                </button>
+        <div className="h-[calc(100vh-80px)] w-full flex flex-col relative">
+            <div className="h-[75%] w-full relative">
+                 <div className="absolute top-2 left-1/2 -translate-x-1/2 z-[5000] bg-slate-800/80 p-1 rounded-full flex space-x-1 backdrop-blur-sm shadow-lg pointer-events-auto">
+                    <button
+                        onClick={() => setActiveFilter('challenges')}
+                        className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors ${activeFilter === 'challenges' ? 'text-white' : 'text-slate-300'}`}
+                        style={{ backgroundColor: activeFilter === 'challenges' ? themeSettings.primaryColor : 'transparent' }}
+                    >
+                        Challenges
+                    </button>
+                    <button
+                        onClick={() => setActiveFilter('perks')}
+                        className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors ${activeFilter === 'perks' ? 'text-white' : 'text-slate-300'}`}
+                        style={{ backgroundColor: activeFilter === 'perks' ? themeSettings.secondaryColor : 'transparent' }}
+                    >
+                        Perks
+                    </button>
+                </div>
+                <div ref={mapContainerRef} className="h-full w-full z-0" style={{ background: '#1e293b' }}></div>
             </div>
-            <div ref={mapContainerRef} className="h-[calc(100vh-140px)] w-full" style={{ background: '#1e293b' }}></div>
+
+            <div className="h-[25%] w-full bg-slate-900 border-t border-slate-700 p-4 overflow-y-auto z-10">
+                {selectedItem ? (
+                    <div className="text-white">
+                        <h3 className="font-bold text-lg" style={{ color: selectedItem.type === 'challenge' ? themeSettings.primaryColor : themeSettings.secondaryColor }}>
+                            {selectedItem.title}
+                        </h3>
+                        <p className="text-slate-300 text-sm mt-1">{selectedItem.description}</p>
+                        {selectedItem.address && <p className="text-slate-400 text-xs mt-2">{selectedItem.address}</p>}
+                        {selectedItem.points && <p className="font-bold mt-2 text-base" style={{ color: themeSettings.primaryColor }}>+{selectedItem.points} TC</p>}
+
+                        <div className="flex space-x-2 mt-3">
+                            {selectedItem.type === 'challenge' && (
+                                <button
+                                    className="flex-1 text-center px-3 py-2 text-sm font-bold text-white rounded-md transition-opacity hover:opacity-90"
+                                    style={{ backgroundColor: themeSettings.primaryColor }}
+                                >
+                                    Details
+                                </button>
+                            )}
+                            {userLocation && selectedItem.latitude && selectedItem.longitude && (
+                                <a
+                                    href={`https://www.google.com/maps/dir/?api=1&origin=${userLocation.lat},${userLocation.lng}&destination=${selectedItem.latitude},${selectedItem.longitude}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 text-center px-3 py-2 text-sm font-bold text-white bg-slate-600 rounded-md transition-colors hover:bg-slate-500"
+                                >
+                                    Get Directions
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="h-full flex flex-col items-center justify-center text-slate-500">
+                        <p className="text-center text-sm">Select an icon on the map to see details</p>
+                    </div>
+                )}
+            </div>
+
             <style>{`
-                .leaflet-popup-content-wrapper {
-                    background: #1e293b; /* slate-800 */
-                    border-radius: 8px;
-                    border: 1px solid #334155; /* slate-700 */
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-                }
-                .leaflet-popup-tip {
-                    background: #1e293b;
-                }
-                .leaflet-container a.leaflet-popup-close-button {
-                    color: #94a3b8;
-                }
                 .custom-pin-icon {
                     background: transparent;
                     border: none;
