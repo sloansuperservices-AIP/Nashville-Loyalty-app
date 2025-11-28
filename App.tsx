@@ -117,7 +117,7 @@ const INITIAL_APP_CONFIG = { challenges: INITIAL_CHALLENGES, perks: INITIAL_PERK
 
 const getInitialAppConfig = () => {
     try {
-        const item = window.localStorage.getItem('rockstar_app_config');
+        const item = window.localStorage.getItem('rockstar_app_config_v2');
         if (item) {
             const savedConfig = JSON.parse(item);
             return { ...INITIAL_APP_CONFIG, ...savedConfig };
@@ -138,8 +138,8 @@ const App: React.FC = () => {
     const [vehicles, setVehicles] = useState<Vehicle[]>(initialConfig.vehicles);
     const [themeSettings, setThemeSettings] = useState<ThemeSettings>(initialConfig.theme);
     
-    const [users, setUsers] = useState<User[]>(() => getInitialData('rockstar_users', INITIAL_USERS, userReviver));
-    const [bookings, setBookings] = useState<Booking[]>(() => getInitialData('rockstar_bookings', []));
+    const [users, setUsers] = useState<User[]>(() => getInitialData('rockstar_users_v2', INITIAL_USERS, userReviver));
+    const [bookings, setBookings] = useState<Booking[]>(() => getInitialData('rockstar_bookings_v2', []));
     
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [validatingChallengeId, setValidatingChallengeId] = useState<number | null>(null);
@@ -154,18 +154,47 @@ const App: React.FC = () => {
 
     // --- Data Persistence ---
     useEffect(() => {
+        // Migration/Cleanup: Clear old v1 keys to free up space
         try {
+            if (localStorage.getItem('rockstar_app_config') || localStorage.getItem('rockstar_users')) {
+                console.log('Cleaning up old storage keys to free space...');
+                localStorage.removeItem('rockstar_app_config');
+                localStorage.removeItem('rockstar_users');
+                localStorage.removeItem('rockstar_bookings');
+            }
+        } catch (e) {
+            console.error("Failed to clean up old keys:", e);
+        }
+
+        try {
+            // Check usage approximation
+            let totalSize = 0;
+            for(let x in localStorage) {
+                if(Object.prototype.hasOwnProperty.call(localStorage, x)) {
+                    totalSize += ((localStorage[x].length + x.length) * 2);
+                }
+            }
+            const totalSizeMB = totalSize / 1024 / 1024;
+            if (totalSizeMB > 4.5) {
+                console.warn(`Local storage is nearly full (${totalSizeMB.toFixed(2)}MB).`);
+            }
+
             const userReplacer = (key: any, value: any) => {
                 if(key === 'completedChallengeIds') return Array.from(value);
                 return value;
             }
-            localStorage.setItem('rockstar_users', JSON.stringify(users, userReplacer));
-            localStorage.setItem('rockstar_bookings', JSON.stringify(bookings));
+            localStorage.setItem('rockstar_users_v2', JSON.stringify(users, userReplacer));
+            localStorage.setItem('rockstar_bookings_v2', JSON.stringify(bookings));
 
             const appConfig = { challenges, perks, deals, vehicles, theme: themeSettings };
-            localStorage.setItem('rockstar_app_config', JSON.stringify(appConfig));
+            localStorage.setItem('rockstar_app_config_v2', JSON.stringify(appConfig));
         } catch (error) {
             console.error("Failed to save data to localStorage:", error);
+            if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+                alert("Storage quota exceeded! Your changes were NOT saved. Please use smaller images or clear browser data.");
+            } else {
+                 alert("Failed to save changes. Please check your browser settings.");
+            }
         }
     }, [users, challenges, perks, deals, vehicles, bookings, themeSettings]);
 
