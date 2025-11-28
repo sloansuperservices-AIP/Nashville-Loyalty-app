@@ -1,7 +1,8 @@
 {
-  "name": "Copy of Rockstar Hospitality Pass",
+  "name": "V2 -Rockstar Hospitality Pass",
   "description": "A gamified scavenger hunt app for short-term rental guests, rewarding them with points and perks for completing real-world challenges at local partner venues.",
   "requestFramePermissions": [
-    "camera"
+    "camera",
+    "geolocation"
   ]
 }

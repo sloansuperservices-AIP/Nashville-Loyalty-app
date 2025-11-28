@@ -1,9 +1,9 @@
 import React, { useRef } from 'react';
-import { Challenge, ChallengeType, ThemeSettings } from '../types';
+import { Challenge, ChallengeType, ThemeSettings, User } from '../types';
 import { CameraIcon, SpinnerIcon, VideoCameraIcon } from './Icons';
 
 interface ChallengesProps {
-  username: string;
+  user: User;
   challenges: Challenge[];
   completedChallengeIds: Set<number>;
   onCompleteChallenge: (challengeId: number, points: number) => void;
@@ -15,7 +15,7 @@ interface ChallengesProps {
 }
 
 export const Challenges: React.FC<ChallengesProps> = ({ 
-  username,
+  user,
   challenges, 
   completedChallengeIds, 
   onCompleteChallenge,
@@ -61,7 +61,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
   const handleBookingRequest = (challenge: Challenge) => {
     if (!challenge.bookingEmail) return;
 
-    const guestName = username;
+    const guestName = user.email.split('@')[0];
     const subject = `AIP Booking Request - ${guestName}`;
     const body = `Hi,\n\nI'd like to request a booking for the ${challenge.venueName}.\n\nPlease let me know the available dates.\n\nThanks,\n${guestName}`;
     const mailtoLink = `mailto:${challenge.bookingEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -159,7 +159,7 @@ export const Challenges: React.FC<ChallengesProps> = ({
                   <p className="text-sm text-slate-400 mt-1">{challenge.description}</p>
                 </div>
                 <div className="flex-shrink-0 text-right ml-4">
-                  <p style={{color: themeSettings.primaryColor}} className="font-bold text-lg">{challenge.points} pts</p>
+                  <p style={{color: themeSettings.primaryColor}} className="font-bold text-lg">+{challenge.points} TC</p>
 
                 </div>
               </div>

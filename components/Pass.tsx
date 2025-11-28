@@ -22,12 +22,19 @@ const hexToRgba = (hex: string, alpha: number): string => {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
+const capitalize = (s: string) => {
+    if (typeof s !== 'string' || s.length === 0) return ''
+    return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
 
 export const Pass: React.FC<PassProps> = ({ user, ranks, rank, progress, themeSettings }) => {
     if (!user || !rank) {
         return null; // or a loading state
     }
     
+    const displayName = user.email.split('@')[0];
+
     return (
         <div className="w-full max-w-lg mx-auto bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-2xl p-6 text-white overflow-hidden relative border border-slate-700">
             <div style={{ backgroundColor: hexToRgba(themeSettings.primaryColor, 0.1) }} className="absolute -top-10 -right-10 w-32 h-32 rounded-full filter blur-2xl"></div>
@@ -43,7 +50,7 @@ export const Pass: React.FC<PassProps> = ({ user, ranks, rank, progress, themeSe
 
                 <div className="mb-4">
                     <p className="text-sm text-slate-400">Rockstar</p>
-                    <p className="text-xl font-medium">{user.username}</p>
+                    <p className="text-xl font-medium">{capitalize(displayName)}</p>
                 </div>
 
                 <div className="flex justify-between items-end mb-2">
@@ -52,8 +59,8 @@ export const Pass: React.FC<PassProps> = ({ user, ranks, rank, progress, themeSe
                         <p style={{ color: rank.color }} className="text-lg font-bold">{rank.name}</p>
                     </div>
                     <div>
-                        <p className="text-sm text-slate-400 text-right">Total Points</p>
-                        <p style={{ color: themeSettings.secondaryColor }} className="text-2xl font-bold">{user.points}</p>
+                        <p className="text-sm text-slate-400 text-right">Tour Cash</p>
+                        <p style={{ color: themeSettings.secondaryColor }} className="text-2xl font-bold">${user.points}</p>
                     </div>
                 </div>
 

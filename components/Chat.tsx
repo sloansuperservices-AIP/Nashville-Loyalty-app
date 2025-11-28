@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, Chat as GenAIChat } from '@google/genai';
-import { ChatBubbleIcon, CloseIcon } from './Icons';
+import { CloseIcon } from './Icons';
 import { ThemeSettings } from '../types';
 
 interface Message {
@@ -9,18 +9,27 @@ interface Message {
 }
 
 interface ChatProps {
+    isOpen: boolean;
+    onClose: () => void;
     themeSettings: ThemeSettings;
 }
 
-export const Chat: React.FC<ChatProps> = ({ themeSettings }) => {
-    const [isOpen, setIsOpen] = useState(false);
+export const Chat: React.FC<ChatProps> = ({ isOpen, onClose, themeSettings }) => {
     const [messages, setMessages] = useState<Message[]>([
-        { text: "Hey Rockstar! How can I help you on your tour today?", sender: 'ai' }
+        { text: "Hey Rockstar! I'm Rocky, your personal roadie. How can I help you on your tour today?", sender: 'ai' }
     ]);
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const chatRef = useRef<GenAIChat | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (isOpen) {
+            // Focus input when chat opens
+            setTimeout(() => inputRef.current?.focus(), 100);
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -32,7 +41,7 @@ export const Chat: React.FC<ChatProps> = ({ themeSettings }) => {
             chatRef.current = ai.chats.create({
                 model: 'gemini-2.5-flash',
                 config: {
-                    systemInstruction: 'You are a friendly and helpful customer support agent for the Rockstar Hospitality Pass application. You assist users with questions about their scavenger hunt challenges, how to earn points, unlock perks, and find partner locations. Your persona is a cool, knowledgeable roadie on a rock tour. Keep your answers concise, helpful, and with a bit of rock-n-roll flair.',
+                    systemInstruction: "You're Rocky, the smart concierge for the Rockstar Hospitality Pass. Your persona is a cool, knowledgeable roadie on a rock tour. You help guests explore challenges, use their perks, book transportation, and discover exclusive partner perks. Keep your answers concise, helpful, and inject a bit of rock-n-roll flair into your responses. For example, use terms like 'gig', 'backstage pass', 'headliner', etc.",
                 },
             });
         }
@@ -66,23 +75,23 @@ export const Chat: React.FC<ChatProps> = ({ themeSettings }) => {
         }
     };
     
+    if (!isOpen) {
+        return null;
+    }
+
     return (
-        <>
-            <div className="fixed bottom-6 right-6 z-50">
-                <button 
-                    onClick={() => setIsOpen(!isOpen)} 
-                    style={{ backgroundColor: themeSettings.primaryColor }}
-                    className="w-16 h-16 rounded-full text-white flex items-center justify-center shadow-lg hover:opacity-90 transition-all duration-300 transform hover:scale-110"
-                    aria-label={isOpen ? "Close chat" : "Open chat support"}
-                >
-                    {isOpen ? <CloseIcon className="w-8 h-8" /> : <ChatBubbleIcon className="w-8 h-8" />}
-                </button>
-            </div>
-            
-            <div className={`fixed bottom-24 right-6 z-50 w-full max-w-sm h-[60vh] bg-slate-800/95 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl flex flex-col transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`} role="dialog" aria-hidden={!isOpen}>
+        <div 
+            className="fixed inset-0 bg-black/60 z-[100] flex flex-col items-center justify-end md:justify-center p-0 md:p-4 backdrop-blur-sm transition-opacity duration-300 animate-fade-in"
+            role="dialog"
+            aria-modal="true"
+        >
+            <div 
+                className="w-full max-w-lg h-full md:h-[80vh] bg-slate-800/95 border-t-2 md:border-2 border-slate-700 rounded-t-2xl md:rounded-2xl shadow-2xl flex flex-col"
+                style={{borderColor: themeSettings.primaryColor}}
+            >
                 <header className="flex-shrink-0 flex items-center justify-between p-4 border-b border-slate-700">
-                    <h3 className="font-bold text-lg text-slate-100">Roadie Support</h3>
-                    <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-white" aria-label="Close chat">
+                    <h3 className="font-bold text-lg text-slate-100">Rocky - AI Concierge</h3>
+                    <button onClick={onClose} className="text-slate-400 hover:text-white" aria-label="Close chat">
                         <CloseIcon className="w-6 h-6" />
                     </button>
                 </header>
@@ -109,6 +118,7 @@ export const Chat: React.FC<ChatProps> = ({ themeSettings }) => {
                 <footer className="flex-shrink-0 p-4 border-t border-slate-700">
                     <form onSubmit={handleSendMessage} className="flex space-x-2">
                         <input
+                            ref={inputRef}
                             type="text"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
@@ -132,6 +142,6 @@ export const Chat: React.FC<ChatProps> = ({ themeSettings }) => {
                     </form>
                 </footer>
             </div>
-        </>
+        </div>
     );
 }

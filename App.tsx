@@ -6,7 +6,7 @@ import { Challenges } from './components/Challenges';
 import { Challenge, ChallengeType, UserRank, Perk, User, Role, PartnerDeal, ThemeSettings, Vehicle, Booking, BookingType } from './types';
 import { Chat } from './components/Chat';
 import { AdminPanel } from './components/AdminPanel';
-import { AtSymbolIcon, CameraIcon, MapPinIcon, ReceiptIcon, MusicNoteIcon, TicketIcon, GiftIcon, CrownIcon, CogIcon, CloseIcon, VideoCameraIcon, UsersIcon, LogoutIcon, QrCodeIcon, CalendarDaysIcon, ViewfinderCircleIcon, PaintBrushIcon, KeyIcon, CreditCardIcon } from './components/Icons';
+import { AtSymbolIcon, CameraIcon, MapPinIcon, ReceiptIcon, MusicNoteIcon, TicketIcon, GiftIcon, CrownIcon, CogIcon, CloseIcon, VideoCameraIcon, UsersIcon, LogoutIcon, QrCodeIcon, CalendarDaysIcon, ViewfinderCircleIcon, PaintBrushIcon, KeyIcon, CreditCardIcon, GoogleIcon, FacebookIcon, InstagramIcon, ChatBubbleIcon } from './components/Icons';
 import { LoginScreen } from './components/LoginScreen';
 import { PartnerDeals } from './components/Deals';
 import { QrCodeModal } from './components/QrCodeModal';
@@ -18,6 +18,9 @@ import { PaymentModal } from './components/PaymentModal';
 import { PartnerPortal } from './components/PartnerPortal';
 import { PartnerInfo } from './types';
 
+import { BottomNav } from './components/BottomNav';
+import { MapView } from './components/MapView';
+import { StatusBar } from './components/StatusBar';
 
 // --- Icon Mapping for Serializable Data ---
 const iconMap: { [key: string]: React.ReactNode } = {
@@ -38,6 +41,9 @@ const iconMap: { [key: string]: React.ReactNode } = {
     'PaintBrush': <PaintBrushIcon className="w-6 h-6" />,
     'Key': <KeyIcon className="w-6 h-6" />,
     'CreditCard': <CreditCardIcon className="w-6 h-6" />,
+    'Google': <GoogleIcon className="w-5 h-5" />,
+    'Facebook': <FacebookIcon className="w-5 h-5" />,
+    'Instagram': <InstagramIcon className="w-5 h-5" />,
 };
 
 // --- Initial Data Definitions ---
@@ -58,6 +64,20 @@ const INITIAL_PERKS: Perk[] = [
     { id: 2, name: 'Free Drink', description: 'Enjoy a complimentary drink at The Vinyl Tap.', requiredPoints: 50, iconName: 'Ticket', position: [36.1613, -86.7785] },
     { id: 3, name: '10% Off Merch', description: 'Receive 10% off at the Rock Shop.', requiredPoints: 100, iconName: 'Gift', position: [36.1623, -86.7779] },
     { id: 4, name: 'VIP Lounge Access', description: 'One-time access to the VIP lounge at The Echo Room.', requiredPoints: 250, iconName: 'Crown', position: [36.1645, -86.7815] },
+  { id: 1, venueName: "The Vinyl Tap", description: "Check-in at the bar.", points: 20, type: ChallengeType.GPS, iconName: 'MapPin', latitude: 36.1487, longitude: -86.7782, address: "2038 Greenwood Ave, Nashville, TN" },
+  { id: 2, venueName: "Miss Kelly’s Karaoke", description: "Submit a video of you singing your heart out.", points: 35, type: ChallengeType.Video, iconName: 'VideoCamera', latitude: 36.1599, longitude: -86.7744, address: "207 Printer's Alley, Nashville, TN" },
+  { id: 3, venueName: "Rock Shop", description: "Spend over $25 on some cool merch.", points: 50, type: ChallengeType.Receipt, iconName: 'Receipt', requiredAmount: 25, latitude: 36.1627, longitude: -86.7751, address: "123 Broadway, Nashville, TN" },
+  { id: 7, venueName: "Secret Speakeasy", description: "Find the hidden QR code inside the venue.", points: 75, type: ChallengeType.QR_CODE, iconName: 'ViewfinderCircle', qrValidationData: 'NASH_ROCK_SUITE_SECRET_CODE', latitude: 36.157, longitude: -86.7765, address: "Hidden Location, Downtown" },
+  { id: 4, venueName: "The Echo Room", description: "Check-in to the legendary music hall.", points: 20, type: ChallengeType.GPS, iconName: 'MapPin', latitude: 36.151, longitude: -86.782, address: "123 Music Row, Nashville, TN" },
+  { id: 5, venueName: "Skull’s Rainbow Room", description: "Post an Instagram pic with their famous neon sign. Tag @skullsrainbowroom.", points: 30, type: ChallengeType.Social, iconName: 'AtSymbol', validationTag: '@skullsrainbowroom', socialUrl: 'https://www.instagram.com/skullsrainbowroom/', latitude: 36.163, longitude: -86.776, address: "222 Printer's Alley, Nashville, TN" },
+  { id: 6, venueName: "Rowdy Party Bus", description: "Request to book the party bus for your crew.", points: 100, type: ChallengeType.Booking, iconName: 'CalendarDays', bookingEmail: 'allinpropertiesnash@gmail.com', latitude: 36.160, longitude: -86.778, address: "City-wide, Nashville, TN" },
+];
+
+const INITIAL_PERKS: Perk[] = [
+    { id: 1, name: 'Exclusive Playlist', description: 'Get access to a curated Rockstar playlist.', requiredPoints: 20, iconName: 'MusicNote' },
+    { id: 2, name: 'Free Drink', description: 'Enjoy a complimentary drink at The Vinyl Tap.', requiredPoints: 50, iconName: 'Ticket', latitude: 36.1487, longitude: -86.7782, address: "2038 Greenwood Ave, Nashville, TN" },
+    { id: 3, name: '10% Off Merch', description: 'Receive 10% off at the Rock Shop.', requiredPoints: 100, iconName: 'Gift', latitude: 36.1627, longitude: -86.7751, address: "123 Broadway, Nashville, TN" },
+    { id: 4, name: 'VIP Lounge Access', description: 'One-time access to the VIP lounge at The Echo Room.', requiredPoints: 250, iconName: 'Crown', latitude: 36.151, longitude: -86.782, address: "123 Music Row, Nashville, TN" },
 ];
 
 const INITIAL_DEALS: PartnerDeal[] = [
@@ -88,6 +108,10 @@ const INITIAL_USERS: User[] = [
     { id: 3, username: 'Devon', password: 'guest', role: Role.Guest, points: 100, completedChallengeIds: new Set([1, 3, 4]) },
     { id: 4, username: 'Sabrina', password: 'guest', role: Role.Guest, points: 20, completedChallengeIds: new Set([1]) },
     { id: 5, username: 'partner', password: 'password', role: Role.Partner, points: 0, completedChallengeIds: new Set() },
+    { id: 1, email: 'admin@rockstar.app', password: 'admin', role: Role.Admin, points: 0, completedChallengeIds: new Set() },
+    { id: 2, email: 'ariel@guest.app', role: Role.Guest, points: 70, completedChallengeIds: new Set([1, 2]) },
+    { id: 3, email: 'devon@guest.app', role: Role.Guest, points: 100, completedChallengeIds: new Set([1, 3, 4]) },
+    { id: 4, email: 'sabrina@guest.app', role: Role.Guest, points: 20, completedChallengeIds: new Set([1]) },
 ];
 
 const ALL_RANKS: UserRank[] = [
@@ -98,11 +122,8 @@ const ALL_RANKS: UserRank[] = [
 ];
 
 // --- Data Management ---
-// Custom reviver to convert array back to Set for completedChallengeIds
 const userReviver = (key: any, value: any) => {
-    if (key === 'completedChallengeIds') {
-        return new Set(value);
-    }
+    if (key === 'completedChallengeIds') return new Set(value);
     return value;
 }
 
@@ -116,20 +137,13 @@ const getInitialData = <T,>(key: string, fallback: T, reviver?: (key: any, value
     }
 };
 
-const INITIAL_APP_CONFIG = {
-    challenges: INITIAL_CHALLENGES,
-    perks: INITIAL_PERKS,
-    deals: INITIAL_DEALS,
-    vehicles: INITIAL_VEHICLES,
-    theme: DEFAULT_THEME_SETTINGS,
-};
+const INITIAL_APP_CONFIG = { challenges: INITIAL_CHALLENGES, perks: INITIAL_PERKS, deals: INITIAL_DEALS, vehicles: INITIAL_VEHICLES, theme: DEFAULT_THEME_SETTINGS };
 
 const getInitialAppConfig = () => {
     try {
         const item = window.localStorage.getItem('rockstar_app_config');
         if (item) {
             const savedConfig = JSON.parse(item);
-            // Merge to ensure new properties from INITIAL_APP_CONFIG are added if they don't exist in saved data
             return { ...INITIAL_APP_CONFIG, ...savedConfig };
         }
         return INITIAL_APP_CONFIG;
@@ -148,7 +162,6 @@ const App: React.FC = () => {
     const [vehicles, setVehicles] = useState<Vehicle[]>(initialConfig.vehicles);
     const [themeSettings, setThemeSettings] = useState<ThemeSettings>(initialConfig.theme);
     
-    // User and booking data is kept separate as it's not part of the global admin config
     const [users, setUsers] = useState<User[]>(() => getInitialData('rockstar_users', INITIAL_USERS, userReviver));
     const [bookings, setBookings] = useState<Booking[]>(() => getInitialData('rockstar_bookings', []));
     
@@ -168,35 +181,44 @@ const App: React.FC = () => {
     // --- Data Persistence ---
     useEffect(() => {
         try {
-            localStorage.setItem('rockstar_partner_info', JSON.stringify(partnerInfo));
-            // Custom replacer to convert Set to Array for JSON.stringify
             const userReplacer = (key: any, value: any) => {
-                if(key === 'completedChallengeIds') {
-                    return Array.from(value);
-                }
+                if(key === 'completedChallengeIds') return Array.from(value);
                 return value;
             }
             localStorage.setItem('rockstar_users', JSON.stringify(users, userReplacer));
             localStorage.setItem('rockstar_bookings', JSON.stringify(bookings));
 
-            const appConfig = {
-                challenges,
-                perks,
-                deals,
-                vehicles,
-                theme: themeSettings,
-            };
+            const appConfig = { challenges, perks, deals, vehicles, theme: themeSettings };
             localStorage.setItem('rockstar_app_config', JSON.stringify(appConfig));
-
         } catch (error) {
             console.error("Failed to save data to localStorage:", error);
-            alert("Could not save changes. Your browser's storage might be full or disabled.");
+            if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+                alert("Storage quota exceeded! Your changes were NOT saved. Please use smaller images or clear browser data.");
+            } else {
+                 alert("Failed to save changes. Please check your browser settings.");
+            }
         }
     }, [users, challenges, perks, deals, vehicles, bookings, themeSettings]);
 
-    // --- Auth Handlers ---
-    const handleLogin = (username: string, password: string):boolean => {
-        const user = users.find(u => u.username === username && u.password === password);
+    const handleSocialLogin = useCallback((email: string) => {
+      let user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.role === Role.Guest);
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        const newUser: User = {
+          id: Date.now(),
+          email: email.toLowerCase(),
+          role: Role.Guest,
+          points: 0,
+          completedChallengeIds: new Set(),
+        };
+        setUsers(prev => [...prev, newUser]);
+        setCurrentUser(newUser);
+      }
+    }, [users]);
+    
+    const handleAdminLogin = (email: string, password: string):boolean => {
+        const user = users.find(u => u.email === email && u.password === password && u.role === Role.Admin);
         if (user) {
             setCurrentUser(user);
             return true;
@@ -221,29 +243,22 @@ const App: React.FC = () => {
         alert('Your information has been saved!');
     };
     
-    // --- Challenge Handlers ---
     const handleCompleteChallenge = useCallback((challengeId: number, challengePoints: number) => {
         if (!currentUser || currentUser.completedChallengeIds.has(challengeId)) return;
-
         const updatedUser = {
             ...currentUser,
             points: currentUser.points + challengePoints,
             completedChallengeIds: new Set(currentUser.completedChallengeIds).add(challengeId),
         };
-        
         setCurrentUser(updatedUser);
         setUsers(prevUsers => prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u));
-
     }, [currentUser]);
 
     const fileToBase64 = (file: File): Promise<string> =>
       new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = () => {
-          const result = reader.result as string;
-          resolve(result.split(',')[1]);
-        };
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
         reader.onerror = error => reject(error);
       });
 
@@ -263,79 +278,49 @@ const App: React.FC = () => {
 
     const handleImageValidation = useCallback(async (challenge: Challenge, imageFile: File) => {
       if (!imageFile || validatingChallengeId) return;
-
       setValidatingChallengeId(challenge.id);
-
       let promptText = '';
-      let successMessage = '';
-      let failureMessage = '';
-      const imageParts: any[] = [];
+      
+      if (challenge.type === ChallengeType.Receipt) {
+        if (!challenge.requiredAmount) {
+          console.error("Receipt challenge is missing 'requiredAmount'.");
+          alert("Configuration error for this challenge. Please contact support.");
+          setValidatingChallengeId(null);
+          return;
+        }
+        promptText = `Analyze this receipt. Does it clearly mention the business "${challenge.venueName}"? Is the total amount greater than or equal to $${challenge.requiredAmount}? Respond with only 'YES' or 'NO'. Both conditions must be met.`;
+      } else if (challenge.type === ChallengeType.Social) {
+          promptText = `Analyze this screenshot. Does it contain the text '${challenge.validationTag}'? Respond with only 'YES' or 'NO'.`;
+      } else if (challenge.type === ChallengeType.Photo) {
+          promptText = `Is this a legitimate photo taken at a real-world location? Respond with only 'YES' or 'NO'.`;
+      } else { 
+          setValidatingChallengeId(null); 
+          return; 
+      }
 
       try {
         const base64Image = await fileToBase64(imageFile);
-        imageParts.push({ inlineData: { mimeType: imageFile.type, data: base64Image } });
-
-        if (challenge.type === ChallengeType.Receipt && challenge.requiredAmount) {
-            promptText = `Analyze this receipt. Does it clearly show the name "${challenge.venueName}" and a total amount greater than or equal to $${challenge.requiredAmount}? Respond with only 'YES' or 'NO'.`;
-            successMessage = 'Receipt approved! Points awarded.';
-            failureMessage = `Validation Failed: The AI determined the receipt does not meet the requirements for ${challenge.venueName}. Please try again.`;
-        } else if (challenge.type === ChallengeType.Social && challenge.validationTag) {
-            promptText = `Analyze this screenshot of a social media post. Does it contain the text '${challenge.validationTag}'? Respond with only 'YES' or 'NO'.`;
-            successMessage = 'Social post verified! Points awarded.';
-            failureMessage = `Validation Failed: The AI could not find the tag '${challenge.validationTag}' in the screenshot. Please try again.`;
-        } else if (challenge.type === ChallengeType.Photo && challenge.referenceImageUrl) {
-            promptText = `Compare these two images. Does the first image (the user's submission) depict the same primary subject or landmark as the second image (the reference)? The angle, lighting, and other people in the photo do not need to match perfectly, but the core subject must be the same. Respond with only 'YES' or 'NO'.`;
-            successMessage = 'Photo submission accepted! Points awarded.';
-            failureMessage = 'Validation Failed: The AI determined this photo does not match the reference image. Please try again.';
-            // Assuming the reference image is a JPEG. Adjust if necessary.
-            const referenceImagePart = await urlToGenerativePart(challenge.referenceImageUrl, 'image/jpeg');
-            imageParts.push(referenceImagePart);
-        } else {
-            // Fallback for simple photo challenges without a reference
-            promptText = `Analyze this photo for a scavenger hunt. Does it appear to be a legitimate photo taken by a person at a real-world location (like a bar, venue, or landmark)? Respond with only 'YES' or 'NO'.`;
-            successMessage = 'Photo submission accepted! Points awarded.';
-            failureMessage = 'Validation Failed: The AI determined this photo might not be suitable for the challenge. Please try again with a different picture.';
-        }
-
-        if (!promptText) {
-            setValidatingChallengeId(null);
-            return;
-        }
-
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const response = await ai.models.generateContent({
           model: 'gemini-2.5-flash',
-          contents: { parts: [...imageParts, { text: promptText }] }
+          contents: { parts: [{ inlineData: { mimeType: imageFile.type, data: base64Image } }, { text: promptText }] }
         });
-
-        const resultText = response.text.trim().toUpperCase();
-
-        if (resultText === 'YES') {
+        if (response.text.trim().toUpperCase() === 'YES') {
           handleCompleteChallenge(challenge.id, challenge.points);
-          alert(successMessage);
+          alert('Validation successful! Points awarded.');
         } else {
-          alert(failureMessage);
+          alert('Validation failed. Please try again.');
         }
       } catch (error) {
         console.error("Error validating image:", error);
-        alert("An error occurred during validation. Please check the console and try again.");
+        alert("An error occurred during validation.");
       } finally {
         setValidatingChallengeId(null);
       }
     }, [handleCompleteChallenge, validatingChallengeId]);
 
-    const handleDealScan = (dealId: number) => {
-        setDeals(prevDeals =>
-            prevDeals.map(deal =>
-                deal.id === dealId ? { ...deal, scanCount: (deal.scanCount || 0) + 1 } : deal
-            )
-        );
-    };
-
-    const handleQrScanStart = (challenge: Challenge) => {
-        setScanningChallenge(challenge);
-        setIsScannerOpen(true);
-    };
+    const handleDealScan = (dealId: number) => setDeals(prev => prev.map(d => d.id === dealId ? { ...d, scanCount: (d.scanCount || 0) + 1 } : d));
+    const handleQrScanStart = (challenge: Challenge) => { setScanningChallenge(challenge); setIsScannerOpen(true); };
 
     const handleScanSuccess = (decodedText: string) => {
         setIsScannerOpen(false);
@@ -343,20 +328,14 @@ const App: React.FC = () => {
             handleCompleteChallenge(scanningChallenge.id, scanningChallenge.points);
             alert(`Success! You've completed the "${scanningChallenge.venueName}" challenge.`);
         } else {
-            alert('Scan failed. This is not the correct QR code for this challenge.');
+            alert('Scan failed. Incorrect QR code.');
         }
         setScanningChallenge(null);
     };
 
-    // --- Booking Handlers ---
     const handleInitiateBooking = (bookingDetails: Omit<Booking, 'id' | 'userId' | 'status'>) => {
         if (!currentUser) return;
-        const newBooking: Booking = {
-            ...bookingDetails,
-            id: Date.now(),
-            userId: currentUser.id,
-            status: 'PENDING_PAYMENT'
-        };
+        const newBooking: Booking = { ...bookingDetails, id: Date.now(), userId: currentUser.id, status: 'PENDING_PAYMENT' };
         setBookings(prev => [...prev, newBooking]);
         setBookingForPayment(newBooking);
         setBookingVehicle(null);
@@ -365,38 +344,23 @@ const App: React.FC = () => {
     const handleConfirmPayment = (bookingId: number) => {
         setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, status: 'CONFIRMED' } : b));
         setBookingForPayment(null);
-        const confirmedBooking = bookings.find(b => b.id === bookingId);
-        const vehicle = vehicles.find(v => v.id === confirmedBooking?.vehicleId);
+        const vehicle = vehicles.find(v => v.id === bookings.find(b => b.id === bookingId)?.vehicleId);
         alert(`Payment confirmed! Your booking for the ${vehicle?.name} is complete.`);
     };
 
-    const userBookings = useMemo(() => {
-        if (!currentUser) return [];
-        return bookings.filter(b => b.userId === currentUser.id && b.status === 'CONFIRMED');
-    }, [bookings, currentUser]);
-
-
-    const userRank = useMemo(() => {
-        if (!currentUser) return ALL_RANKS[0];
-        return [...ALL_RANKS].reverse().find(rank => currentUser.points >= rank.minPoints) || ALL_RANKS[0];
-    }, [currentUser]);
-    
+    const userBookings = useMemo(() => currentUser ? bookings.filter(b => b.userId === currentUser.id && b.status === 'CONFIRMED') : [], [bookings, currentUser]);
+    const userRank = useMemo(() => currentUser ? [...ALL_RANKS].reverse().find(rank => currentUser.points >= rank.minPoints) || ALL_RANKS[0] : ALL_RANKS[0], [currentUser]);
     const progress = useMemo(() => {
         if (!currentUser) return 0;
         const currentRankIndex = ALL_RANKS.findIndex(r => r.name === userRank.name);
         const nextRank = ALL_RANKS[currentRankIndex + 1];
-        if (!nextRank) {
-            return 100;
-        }
+        if (!nextRank) return 100;
         const pointsInTier = currentUser.points - userRank.minPoints;
         const pointsForNextTier = nextRank.minPoints - userRank.minPoints;
         return Math.min((pointsInTier / pointsForNextTier) * 100, 100);
     }, [currentUser, userRank]);
 
-    const appStyle: React.CSSProperties = {
-        fontFamily: themeSettings.fontFamily,
-    };
-
+    const appStyle: React.CSSProperties = { fontFamily: themeSettings.fontFamily };
     if (themeSettings.backgroundImage) {
         appStyle.backgroundImage = `url(${themeSettings.backgroundImage})`;
         appStyle.backgroundSize = 'cover';
@@ -404,158 +368,59 @@ const App: React.FC = () => {
         appStyle.backgroundAttachment = 'fixed';
     }
 
-    if (!currentUser) {
-        return <LoginScreen onLogin={handleLogin} users={users} themeSettings={themeSettings} />;
-    }
+    if (!currentUser) return <LoginScreen onAdminLogin={handleAdminLogin} onSocialLogin={handleSocialLogin} users={users} themeSettings={themeSettings} iconMap={iconMap} />;
     
     const vehicleForPayment = bookingForPayment ? vehicles.find(v => v.id === bookingForPayment.vehicleId) : null;
 
+    const renderContent = () => {
+        switch(activeTab) {
+            case 'map': return <MapView challenges={challenges} perks={perks} iconMap={iconMap} themeSettings={themeSettings} />;
+            case 'challenges': return <Challenges user={currentUser} challenges={challenges} completedChallengeIds={currentUser.completedChallengeIds} onCompleteChallenge={handleCompleteChallenge} validatingChallengeId={validatingChallengeId} onImageSubmit={handleImageValidation} onQrScanStart={handleQrScanStart} iconMap={iconMap} themeSettings={themeSettings}/>;
+            case 'pass': return <div className="space-y-8"><Pass user={currentUser} ranks={ALL_RANKS} rank={userRank} progress={progress} themeSettings={themeSettings}/><Perks currentPoints={currentUser.points} perks={perks} iconMap={iconMap} themeSettings={themeSettings} /></div>;
+            case 'deals': return <PartnerDeals deals={deals} onDealClick={setSelectedDeal} iconMap={iconMap} themeSettings={themeSettings} />;
+            case 'rides': return <div className="space-y-8"><VehicleScheduling vehicles={vehicles} onBook={setBookingVehicle} themeSettings={themeSettings} />{userBookings.length > 0 && <MyBookings bookings={userBookings} vehicles={vehicles} themeSettings={themeSettings} />}</div>;
+            default: return null;
+        }
+    };
+
     return (
-        <div style={appStyle} className={`min-h-screen ${!themeSettings.backgroundImage ? 'bg-slate-900' : ''} text-slate-100 p-4 md:p-8`}>
-             <div className={`container mx-auto max-w-4xl ${themeSettings.backgroundImage ? 'bg-slate-900/50 backdrop-blur-sm rounded-2xl p-4 md:p-8' : ''}`}>
+        <div style={appStyle} className={`min-h-screen ${!themeSettings.backgroundImage ? 'bg-slate-900' : ''} text-slate-100`}>
+             <div className={`min-h-screen flex flex-col ${themeSettings.backgroundImage ? 'bg-slate-900/50 backdrop-blur-sm' : ''}`}>
                  {isAdminView ? (
-                    <AdminPanel 
-                        users={users}
-                        setUsers={setUsers}
-                        challenges={challenges}
-                        setChallenges={setChallenges}
-                        perks={perks}
-                        setPerks={setPerks}
-                        deals={deals}
-                        setDeals={setDeals}
-                        vehicles={vehicles}
-                        setVehicles={setVehicles}
-                        themeSettings={themeSettings}
-                        setThemeSettings={setThemeSettings}
-                        onExit={() => setIsAdminView(false)}
-                        onLogout={handleLogout}
-                        iconMap={iconMap}
-                    />
+                    <div className="p-4 md:p-8"><AdminPanel users={users} setUsers={setUsers} challenges={challenges} setChallenges={setChallenges} perks={perks} setPerks={setPerks} deals={deals} setDeals={setDeals} vehicles={vehicles} setVehicles={setVehicles} themeSettings={themeSettings} setThemeSettings={setThemeSettings} onExit={() => setIsAdminView(false)} onLogout={handleLogout} iconMap={iconMap}/></div>
                  ) : (
                     <>
-                        <header className="text-center mb-8">
-                            <h1 style={{ backgroundImage: `linear-gradient(to right, ${themeSettings.primaryColor}, ${themeSettings.secondaryColor})` }} className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text tracking-wide">
-                                {themeSettings.headerText}
-                            </h1>
-                            <p className="text-slate-400">{themeSettings.subHeaderText}</p>
+                        <header className="flex-shrink-0 flex justify-between items-center p-4 sticky top-0 z-20 bg-slate-900/80 backdrop-blur-sm">
+                             <div className="w-10">
+                                {currentUser.role === Role.Admin && <button onClick={() => setIsAdminView(true)} className="text-slate-300 hover:text-white transition-colors p-2"><CogIcon className="w-6 h-6" /></button>}
+                             </div>
+                             <div className="text-center">
+                                <h1 style={{ backgroundImage: `linear-gradient(to right, ${themeSettings.primaryColor}, ${themeSettings.secondaryColor})` }} className="text-2xl font-extrabold text-transparent bg-clip-text tracking-wide">{themeSettings.headerText}</h1>
+                            </div>
+                            <button onClick={() => setIsChatOpen(true)} className="text-slate-300 hover:text-white transition-colors p-2" aria-label="Open AI Concierge"><ChatBubbleIcon className="w-6 h-6"/></button>
                         </header>
 
-                        <main className="space-y-8 md:space-y-12">
-                            <section>
-                                <Pass 
-                                    user={currentUser}
-                                    ranks={ALL_RANKS}
-                                    rank={userRank} 
-                                    progress={progress}
-                                    themeSettings={themeSettings}
-                                />
-                                <button onClick={() => setShowMap(!showMap)} className="w-full mt-4 py-2 px-4 bg-slate-700 text-white font-bold rounded-md hover:bg-slate-600 transition-colors">
-                                    {showMap ? 'Hide Map' : 'Show Map'}
-                                </button>
-                            </section>
-
-                            {showMap && (
-                                <section>
-                                    <Locations challenges={challenges} perks={perks} deals={deals} />
-                                </section>
+                        <main className="flex-grow overflow-y-auto pb-24">
+                            {activeTab !== 'map' ? (
+                                <div className="p-4 space-y-4">
+                                    <StatusBar user={currentUser} rank={userRank} themeSettings={themeSettings} />
+                                    {renderContent()}
+                                </div>
+                            ) : (
+                                renderContent() // Map view handles its own layout
                             )}
-
-                            <section>
-                                <VehicleScheduling vehicles={vehicles} onBook={setBookingVehicle} themeSettings={themeSettings} />
-                            </section>
-                            
-                            {userBookings.length > 0 &&
-                                <section>
-                                    <MyBookings bookings={userBookings} vehicles={vehicles} themeSettings={themeSettings} />
-                                </section>
-                            }
-
-                            <section>
-                                <Challenges 
-                                    username={currentUser.username}
-                                    challenges={challenges}
-                                    completedChallengeIds={currentUser.completedChallengeIds}
-                                    onCompleteChallenge={handleCompleteChallenge}
-                                    validatingChallengeId={validatingChallengeId}
-                                    onImageSubmit={handleImageValidation}
-                                    onQrScanStart={handleQrScanStart}
-                                    iconMap={iconMap}
-                                    themeSettings={themeSettings}
-                                />
-                            </section>
-
-                            <section>
-                                <Perks currentPoints={currentUser.points} perks={perks} iconMap={iconMap} themeSettings={themeSettings} />
-                            </section>
-
-                            <section>
-                                <PartnerDeals deals={deals} onDealClick={setSelectedDeal} iconMap={iconMap} themeSettings={themeSettings} />
-                            </section>
-
                         </main>
                         
-                        <footer className="text-center mt-12 text-slate-500 text-sm">
-                            <p>&copy; {new Date().getFullYear()} Rockstar Hospitality Pass. All rights reserved.</p>
-                        </footer>
-                        <Chat themeSettings={themeSettings} />
+                        <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} themeSettings={themeSettings} />
                     </>
                  )}
             </div>
-             {currentUser.role === Role.Admin && (
-                <div className="fixed bottom-24 right-6 z-50">
-                    <button 
-                        onClick={() => setIsAdminView(!isAdminView)} 
-                        className="w-16 h-16 bg-slate-600 rounded-full text-white flex items-center justify-center shadow-lg hover:bg-slate-500 transition-all duration-300 transform hover:scale-110"
-                        aria-label={isAdminView ? "Exit Admin Panel" : "Open Admin Panel"}
-                    >
-                        {isAdminView ? <CloseIcon className="w-8 h-8" /> : <CogIcon className="w-8 h-8" />}
-                    </button>
-                </div>
-             )}
-             {currentUser.role === Role.Partner && (
-                <div className="fixed bottom-24 right-6 z-50">
-                    <button
-                        onClick={() => setIsPartnerPortalOpen(true)}
-                        className="w-16 h-16 bg-purple-600 rounded-full text-white flex items-center justify-center shadow-lg hover:bg-purple-500 transition-all duration-300 transform hover:scale-110"
-                        aria-label="Open Partner Portal"
-                    >
-                        <KeyIcon className="w-8 h-8" />
-                    </button>
-                </div>
-             )}
-            {isPartnerPortalOpen && (
-                <PartnerPortal
-                    partnerInfo={partnerInfo.find(p => p.userId === currentUser.id)}
-                    onSave={handleSavePartnerInfo}
-                    onExit={() => setIsPartnerPortalOpen(false)}
-                />
-            )}
-             {selectedDeal && (
-                <QrCodeModal deal={selectedDeal} onClose={() => setSelectedDeal(null)} onScan={() => handleDealScan(selectedDeal.id)} themeSettings={themeSettings} />
-             )}
-             {isScannerOpen && (
-                <QrScanner 
-                    onScanSuccess={handleScanSuccess} 
-                    onClose={() => setIsScannerOpen(false)} 
-                />
-             )}
-             {bookingVehicle && (
-                <BookingModal
-                    vehicle={bookingVehicle}
-                    onClose={() => setBookingVehicle(null)}
-                    onBook={handleInitiateBooking}
-                    themeSettings={themeSettings}
-                />
-             )}
-             {bookingForPayment && vehicleForPayment && (
-                <PaymentModal
-                    booking={bookingForPayment}
-                    vehicle={vehicleForPayment}
-                    onClose={() => setBookingForPayment(null)}
-                    onConfirm={handleConfirmPayment}
-                    themeSettings={themeSettings}
-                />
-             )}
+            
+             <Chat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} themeSettings={themeSettings} />
+             {selectedDeal && <QrCodeModal deal={selectedDeal} onClose={() => setSelectedDeal(null)} onScan={() => handleDealScan(selectedDeal.id)} themeSettings={themeSettings} />}
+             {isScannerOpen && <QrScanner onScanSuccess={handleScanSuccess} onClose={() => setIsScannerOpen(false)} />}
+             {bookingVehicle && <BookingModal vehicle={bookingVehicle} onClose={() => setBookingVehicle(null)} onBook={handleInitiateBooking} themeSettings={themeSettings}/>}
+             {bookingForPayment && vehicleForPayment && <PaymentModal booking={bookingForPayment} vehicle={vehicleForPayment} onClose={() => setBookingForPayment(null)} onConfirm={handleConfirmPayment} themeSettings={themeSettings} />}
         </div>
     );
 };
