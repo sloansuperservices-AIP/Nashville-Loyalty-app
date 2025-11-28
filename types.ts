@@ -17,6 +17,9 @@ export interface Challenge {
   points: number;
   type: ChallengeType;
   iconName: string;
+  position: [number, number];
+  referenceImageUrl?: string;
+  requiredAmount?: number;
   validationTag?: string; // e.g. '@username' for social media
   socialUrl?: string; // e.g. URL to the social media profile
   bookingEmail?: string; // e.g., 'booking@example.com'
@@ -51,11 +54,21 @@ export interface PartnerDeal {
   qrCodeData: string;
   iconName: string;
   scanCount: number;
+  position: [number, number];
+}
+
+export interface PartnerInfo {
+    userId: number;
+    kpis: string;
+    vipDeal: string;
+    challenges: string;
+    perks: string;
 }
 
 export enum Role {
   Admin = 'ADMIN',
   Guest = 'GUEST',
+  Partner = 'PARTNER',
 }
 
 export interface User {

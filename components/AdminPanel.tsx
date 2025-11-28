@@ -120,6 +120,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
         }
     };
 
+    const handleChallengeImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const base64 = await fileToBase64(file);
+            setFormState((prev: any) => ({ ...prev, referenceImageUrl: base64 }));
+        }
+    };
+
 
     const removeBgImage = () => {
         setThemeSettings(prev => ({ ...prev, backgroundImage: '' }));
@@ -130,10 +138,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
         const challengeData = { ...formState };
         
         if (editingItem && 'id' in editingItem) { // Update
-            setChallenges(challenges.map(c => c.id === challengeData.id ? challengeData : c));
+            setChallenges(prev => prev.map(c => c.id === challengeData.id ? challengeData : c));
         } else { // Create
             challengeData.id = Date.now();
-            setChallenges([...challenges, challengeData]);
+            setChallenges(prev => [...prev, challengeData]);
         }
         closeForm();
     };
@@ -143,10 +151,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
         const perkData = { ...formState };
 
         if (editingItem && 'id' in editingItem) { // Update
-            setPerks(perks.map(p => p.id === perkData.id ? perkData : p));
+            setPerks(prev => prev.map(p => p.id === perkData.id ? perkData : p));
         } else { // Create
             perkData.id = Date.now();
-            setPerks([...perks, perkData]);
+            setPerks(prev => [...prev, perkData]);
         }
         closeForm();
     };
@@ -156,11 +164,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
         const dealData = { ...formState };
 
         if (editingItem && 'id' in editingItem) { // Update
-            setDeals(deals.map(d => d.id === dealData.id ? dealData : d));
+            setDeals(prev => prev.map(d => d.id === dealData.id ? dealData : d));
         } else { // Create
             dealData.id = Date.now();
             dealData.scanCount = dealData.scanCount || 0;
-            setDeals([...deals, dealData]);
+            setDeals(prev => [...prev, dealData]);
         }
         closeForm();
     };
@@ -169,12 +177,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
         e.preventDefault();
         const userData = { ...formState };
         if (editingItem && 'id' in editingItem) { // Update
-            setUsers(users.map(u => u.id === userData.id ? { ...u, ...userData } : u));
+            setUsers(prev => prev.map(u => u.id === userData.id ? { ...u, ...userData } : u));
         } else { // Create
             userData.id = Date.now();
             userData.points = 0;
             userData.completedChallengeIds = new Set();
-            setUsers([...users, userData]);
+            setUsers(prev => [...prev, userData]);
         }
         closeForm();
     };
@@ -189,10 +197,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
         }
 
         if (editingItem && 'id' in editingItem) { // Update
-            setVehicles(vehicles.map(v => v.id === vehicleData.id ? vehicleData : v));
+            setVehicles(prev => prev.map(v => v.id === vehicleData.id ? vehicleData : v));
         } else { // Create
             vehicleData.id = Date.now();
-            setVehicles([...vehicles, vehicleData]);
+            setVehicles(prev => [...prev, vehicleData]);
         }
         closeForm();
     };
@@ -466,7 +474,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
                                  </div>
                                  <div className="flex space-x-2">
                                      <button onClick={() => openForm(u)} className="p-2 text-slate-400 hover:text-cyan-400" title="Manage User"><UsersIcon className="w-5 h-5" /></button>
-                                     <button onClick={() => setUsers(users.filter(i => i.id !== u.id))} className="p-2 text-slate-400 hover:text-red-500" title="Delete User"><TrashIcon className="w-5 h-5" /></button>
+                                     <button onClick={() => setUsers(prev => prev.filter(i => i.id !== u.id))} className="p-2 text-slate-400 hover:text-red-500" title="Delete User"><TrashIcon className="w-5 h-5" /></button>
                                  </div>
                              </div>
                          ))}
@@ -490,7 +498,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
                                 </div>
                                 <div className="flex space-x-2">
                                     <button onClick={() => openForm(c)} className="p-2 text-slate-400 hover:text-cyan-400"><PencilIcon className="w-5 h-5" /></button>
-                                    <button onClick={() => setChallenges(challenges.filter(i => i.id !== c.id))} className="p-2 text-slate-400 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
+                                    <button onClick={() => setChallenges(prev => prev.filter(i => i.id !== c.id))} className="p-2 text-slate-400 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
                                 </div>
                             </div>
                         ))}
@@ -514,7 +522,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
                                 </div>
                                 <div className="flex space-x-2">
                                     <button onClick={() => openForm(p)} className="p-2 text-slate-400 hover:text-cyan-400"><PencilIcon className="w-5 h-5" /></button>
-                                    <button onClick={() => setPerks(perks.filter(i => i.id !== p.id))} className="p-2 text-slate-400 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
+                                    <button onClick={() => setPerks(prev => prev.filter(i => i.id !== p.id))} className="p-2 text-slate-400 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
                                 </div>
                             </div>
                         ))}
@@ -538,7 +546,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
                                 </div>
                                 <div className="flex space-x-2">
                                     <button onClick={() => openForm(d)} className="p-2 text-slate-400 hover:text-cyan-400"><PencilIcon className="w-5 h-5" /></button>
-                                    <button onClick={() => setDeals(deals.filter(i => i.id !== d.id))} className="p-2 text-slate-400 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
+                                    <button onClick={() => setDeals(prev => prev.filter(i => i.id !== d.id))} className="p-2 text-slate-400 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
                                 </div>
                             </div>
                         ))}
@@ -562,7 +570,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, setUsers, challen
                                 </div>
                                 <div className="flex space-x-2">
                                     <button onClick={() => openForm(v)} className="p-2 text-slate-400 hover:text-cyan-400"><PencilIcon className="w-5 h-5" /></button>
-                                    <button onClick={() => setVehicles(vehicles.filter(i => i.id !== v.id))} className="p-2 text-slate-400 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
+                                    <button onClick={() => setVehicles(prev => prev.filter(i => i.id !== v.id))} className="p-2 text-slate-400 hover:text-red-500"><TrashIcon className="w-5 h-5" /></button>
                                 </div>
                             </div>
                         ))}
