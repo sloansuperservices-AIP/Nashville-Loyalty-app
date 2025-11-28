@@ -6,7 +6,7 @@ import { Challenges } from './components/Challenges';
 import { Challenge, ChallengeType, UserRank, Perk, User, Role, PartnerDeal, ThemeSettings, Vehicle, Booking, BookingType } from './types';
 import { Chat } from './components/Chat';
 import { AdminPanel } from './components/AdminPanel';
-import { AtSymbolIcon, CameraIcon, MapPinIcon, ReceiptIcon, MusicNoteIcon, TicketIcon, GiftIcon, CrownIcon, CogIcon, CloseIcon, VideoCameraIcon, UsersIcon, LogoutIcon, QrCodeIcon, CalendarDaysIcon, ViewfinderCircleIcon, PaintBrushIcon, KeyIcon, CreditCardIcon, GoogleIcon, FacebookIcon, InstagramIcon, ChatBubbleIcon } from './components/Icons';
+import { AtSymbolIcon, CameraIcon, MapPinIcon, ReceiptIcon, MusicNoteIcon, TicketIcon, GiftIcon, CrownIcon, CogIcon, CloseIcon, VideoCameraIcon, UsersIcon, LogoutIcon, QrCodeIcon, CalendarDaysIcon, ViewfinderCircleIcon, PaintBrushIcon, KeyIcon, CreditCardIcon, GoogleIcon, FacebookIcon, InstagramIcon, ChatBubbleIcon, ClockIcon, StarIcon } from './components/Icons';
 import { LoginScreen } from './components/LoginScreen';
 import { PartnerDeals } from './components/Deals';
 import { QrCodeModal } from './components/QrCodeModal';
@@ -41,17 +41,151 @@ const iconMap: { [key: string]: React.ReactNode } = {
     'Google': <GoogleIcon className="w-5 h-5" />,
     'Facebook': <FacebookIcon className="w-5 h-5" />,
     'Instagram': <InstagramIcon className="w-5 h-5" />,
+    'Clock': <ClockIcon className="w-6 h-6" />,
+    'Star': <StarIcon className="w-6 h-6" />,
+    'BullRide': <StarIcon className="w-6 h-6" />, // Mapping BullRide to StarIcon for now
 };
 
 // --- Initial Data Definitions ---
 const INITIAL_CHALLENGES: Challenge[] = [
-  { id: 1, venueName: "The Vinyl Tap", description: "Check-in at the bar.", points: 20, type: ChallengeType.GPS, iconName: 'MapPin', latitude: 36.1487, longitude: -86.7782, address: "2038 Greenwood Ave, Nashville, TN" },
-  { id: 2, venueName: "Miss Kelly’s Karaoke", description: "Submit a video of you singing your heart out.", points: 35, type: ChallengeType.Video, iconName: 'VideoCamera', latitude: 36.1599, longitude: -86.7744, address: "207 Printer's Alley, Nashville, TN" },
-  { id: 3, venueName: "Rock Shop", description: "Spend over $25 on some cool merch.", points: 50, type: ChallengeType.Receipt, iconName: 'Receipt', requiredAmount: 25, latitude: 36.1627, longitude: -86.7751, address: "123 Broadway, Nashville, TN" },
-  { id: 7, venueName: "Secret Speakeasy", description: "Find the hidden QR code inside the venue.", points: 75, type: ChallengeType.QR_CODE, iconName: 'ViewfinderCircle', qrValidationData: 'NASH_ROCK_SUITE_SECRET_CODE', latitude: 36.157, longitude: -86.7765, address: "Hidden Location, Downtown" },
-  { id: 4, venueName: "The Echo Room", description: "Check-in to the legendary music hall.", points: 20, type: ChallengeType.GPS, iconName: 'MapPin', latitude: 36.151, longitude: -86.782, address: "123 Music Row, Nashville, TN" },
-  { id: 5, venueName: "Skull’s Rainbow Room", description: "Post an Instagram pic with their famous neon sign. Tag @skullsrainbowroom.", points: 30, type: ChallengeType.Social, iconName: 'AtSymbol', validationTag: '@skullsrainbowroom', socialUrl: 'https://www.instagram.com/skullsrainbowroom/', latitude: 36.163, longitude: -86.776, address: "222 Printer's Alley, Nashville, TN" },
-  { id: 6, venueName: "Rowdy Party Bus", description: "Request to book the party bus for your crew.", points: 100, type: ChallengeType.Booking, iconName: 'CalendarDays', bookingEmail: 'allinpropertiesnash@gmail.com', latitude: 36.160, longitude: -86.778, address: "City-wide, Nashville, TN" },
+  {
+    id: 1,
+    venueName: "The Cellar",
+    description: "Check in, play one round of pool, and upload your score to start earning leaderboard points.",
+    address: "205 Broadway, Nashville, TN",
+    points: 150,
+    type: ChallengeType.GPS,
+    iconName: "MapPin",
+    latitude: 36.1613,
+    longitude: -86.7752
+  },
+  {
+    id: 2,
+    venueName: "Wild Beaver Saloon",
+    description: "Ride the mechanical bull and post a video tagging #NashVegasBeaver to complete the challenge.",
+    address: "212 Commerce St, Nashville, TN",
+    points: 250,
+    type: ChallengeType.Video,
+    iconName: "BullRide",
+    latitude: 36.1625,
+    longitude: -86.7758
+  },
+  {
+    id: 3,
+    venueName: "Mr. Pizza",
+    description: "Buy any item after midnight and upload your receipt for bonus night-owl points.",
+    address: "221 4th Ave N, Nashville, TN",
+    points: 100,
+    type: ChallengeType.Receipt,
+    iconName: "Receipt",
+    requiredAmount: 1, // Any item implies > 0
+    latitude: 36.1645,
+    longitude: -86.7795
+  },
+  {
+    id: 4,
+    venueName: "Ms. Kelli’s Karaoke",
+    description: "Check in and snap a selfie on stage to prove you took the mic.",
+    address: "207 Printers Alley, Nashville, TN",
+    points: 200,
+    type: ChallengeType.Social,
+    iconName: "MusicNote",
+    validationTag: "Karaoke", // Placeholder validation tag
+    latitude: 36.1638,
+    longitude: -86.7788
+  },
+  {
+    id: 5,
+    venueName: "MJ Coffee",
+    description: "Take a picture of your drink and tag #MJPerks to unlock your caffeine bonus.",
+    address: "3rd Ave N & Church St, Nashville, TN",
+    points: 75,
+    type: ChallengeType.Social,
+    iconName: "Camera",
+    validationTag: "#MJPerks",
+    latitude: 36.1630,
+    longitude: -86.7775
+  },
+  {
+    id: 6,
+    venueName: "The Cellar",
+    description: "Check in and redeem the 2-for-1 drink special before 8 PM to earn points.",
+    address: "205 Broadway, Nashville, TN",
+    points: 125,
+    type: ChallengeType.GPS,
+    iconName: "MapPin",
+    latitude: 36.1613,
+    longitude: -86.7752
+  },
+  {
+    id: 7,
+    venueName: "Doc Holliday’s",
+    description: "Visit between 4–6 PM to help fill slow hours and earn time-boosted bonus points.",
+    address: "110 Printer’s Alley, Nashville, TN",
+    points: 100,
+    type: ChallengeType.GPS,
+    iconName: "Clock",
+    latitude: 36.1640,
+    longitude: -86.7788
+  },
+  {
+    id: 8,
+    venueName: "Bob's Rock N Bar Roll",
+    description: "Book the Bobbys Rock N Bar Roll and enjoy the best bar crawl in Nashville and get Double points. Scan QR code at end for Points",
+    address: "Starts at 200 Broadway, Nashville, TN",
+    points: 500,
+    type: ChallengeType.QR_CODE,
+    iconName: "Star",
+    qrValidationData: "BOBS_ROCK_N_BAR_ROLL_COMPLETE",
+    latitude: 36.1612,
+    longitude: -86.7750
+  },
+  {
+    id: 10,
+    venueName: "Printer’s Alley",
+    description: "Find the neon sign in the alley and snap a photo with it to earn scavenger points.",
+    address: "Printer’s Alley, Nashville, TN",
+    points: 30,
+    type: ChallengeType.Social,
+    iconName: "Camera",
+    validationTag: "Neon",
+    latitude: 36.1642,
+    longitude: -86.7788
+  },
+  {
+    id: 12,
+    venueName: "Pedal Tavern",
+    description: "Shoot a 5-second clip of your crew pedaling and tag #PedalPower to get credit.",
+    address: "150 Peabody St, Nashville, TN",
+    points: 250,
+    type: ChallengeType.Video,
+    iconName: "Camera",
+    latitude: 36.1585,
+    longitude: -86.7720
+  },
+  {
+    id: 13,
+    venueName: "Doc Holliday’s",
+    description: "Purchase the 2-whiskey sampler and upload the receipt for the Whiskey Legend badge.",
+    address: "110 Printer’s Alley, Nashville, TN",
+    points: 200,
+    type: ChallengeType.Receipt,
+    iconName: "Receipt",
+    requiredAmount: 5, // Approximate minimum
+    latitude: 36.1640,
+    longitude: -86.7788
+  },
+  {
+    id: 14,
+    venueName: "The Cellar",
+    description: "Stay checked in for 30+ minutes and complete the darts or pool mini-game.",
+    address: "205 Broadway, Nashville, TN",
+    points: 150,
+    type: ChallengeType.GPS,
+    iconName: "Clock",
+    latitude: 36.1613,
+    longitude: -86.7752
+  }
 ];
 
 const INITIAL_PERKS: Perk[] = [
