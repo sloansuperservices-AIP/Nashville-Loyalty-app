@@ -139,9 +139,9 @@ const INITIAL_DEALS: PartnerDeal[] = [
 const INITIAL_VEHICLES: Vehicle[] = [
     { 
         id: 1, 
-        name: 'The Pink Vintage', 
-        description: 'Broadway Drop Off & Pick Up. A classic pink roadster perfect for making an entrance.', 
-        imageUrl: 'https://images.unsplash.com/photo-1552519507-da8b1227facf?q=80&w=800&auto=format&fit=crop', 
+        name: 'The Johnny Cash - Black Vintage', 
+        description: 'Broadway Drop Off & Pick Up. Ride in style with the Man in Black\'s favorite color.', 
+        imageUrl: 'https://images.unsplash.com/photo-1495360019602-e001921678fe?q=80&w=800&auto=format&fit=crop', 
         capacity: 7, 
         type: 'Sedan', 
         iCalUrl: 'https://calendar.google.com/calendar/ical/example%40gmail.com/public/basic.ics', 
@@ -163,9 +163,9 @@ const INITIAL_VEHICLES: Vehicle[] = [
     },
     { 
         id: 3, 
-        name: 'Midnight Classic Coach', 
-        description: 'Perfect for larger groups (8-12). Choose any 1.5 hour guided tour.', 
-        imageUrl: 'https://images.unsplash.com/photo-1495360019602-e001921678fe?q=80&w=800&auto=format&fit=crop', 
+        name: 'The Dolly Parton - Pink Vintage', 
+        description: 'Perfect for larger groups (8-12). Choose any 1.5 hour guided tour. As vibrant as the Queen of Country.', 
+        imageUrl: 'https://images.unsplash.com/photo-1552519507-da8b1227facf?q=80&w=800&auto=format&fit=crop', 
         capacity: 12, 
         type: 'Party Bus', 
         iCalUrl: 'https://calendar.google.com/calendar/ical/example3%40gmail.com/public/basic.ics', 
@@ -199,8 +199,8 @@ const ALL_RANKS: UserRank[] = [
 ];
 
 // --- Data Management ---
-const STORAGE_KEY_CONFIG = 'rockstar_app_config_v5'; // Incremented to v5 to apply branding revert
-const LEGACY_STORAGE_KEYS = ['rockstar_app_config_v4', 'rockstar_app_config_v3', 'rockstar_app_config_v2', 'rockstar_app_config', 'app_config']; 
+const STORAGE_KEY_CONFIG = 'rockstar_app_config_v6'; // Incremented to v6 to apply vehicle updates
+const LEGACY_STORAGE_KEYS = ['rockstar_app_config_v5', 'rockstar_app_config_v4', 'rockstar_app_config_v3', 'rockstar_app_config_v2', 'rockstar_app_config', 'app_config']; 
 const STORAGE_KEY_USERS = 'rockstar_users';
 const STORAGE_KEY_BOOKINGS = 'rockstar_bookings';
 
@@ -223,7 +223,7 @@ const INITIAL_APP_CONFIG = { challenges: INITIAL_CHALLENGES, perks: INITIAL_PERK
 
 const getInitialAppConfig = () => {
     try {
-        // 1. Try V5 (Current)
+        // 1. Try V6 (Current)
         const item = window.localStorage.getItem(STORAGE_KEY_CONFIG);
         if (item) {
             const savedConfig = JSON.parse(item);
@@ -236,12 +236,12 @@ const getInitialAppConfig = () => {
              if (legacyItem) {
                  console.log(`Migrating configuration from legacy key: ${key}`);
                  const legacyConfig = JSON.parse(legacyItem);
-                 // Migrate data but enforce the Reverted Theme and New Vehicles
+                 // Migrate data but enforce the New Vehicles
                  return { 
                      ...INITIAL_APP_CONFIG, 
                      ...legacyConfig, 
-                     vehicles: INITIAL_VEHICLES, 
-                     theme: DEFAULT_THEME_SETTINGS 
+                     vehicles: INITIAL_VEHICLES,
+                     theme: DEFAULT_THEME_SETTINGS
                  };
              }
         }
