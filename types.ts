@@ -8,6 +8,7 @@ export enum ChallengeType {
   Video = 'VIDEO',
   Booking = 'BOOKING',
   QR_CODE = 'QR_CODE',
+  SCAVENGER_HUNT = 'SCAVENGER_HUNT',
 }
 
 export interface Challenge {
@@ -25,6 +26,7 @@ export interface Challenge {
   latitude?: number;
   longitude?: number;
   address?: string;
+  scavengerHuntItems?: string[]; // List of items to find for Scavenger Hunt
 }
 
 export interface UserRank {
@@ -65,6 +67,8 @@ export interface User {
   role: Role;
   points: number;
   completedChallengeIds: Set<number>;
+  // Maps challengeId to an array of indices of completed items
+  scavengerHuntProgress?: Record<number, number[]>;
 }
 
 export interface ThemeSettings {

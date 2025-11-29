@@ -6,7 +6,7 @@ import { Challenges } from './components/Challenges';
 import { Challenge, ChallengeType, UserRank, Perk, User, Role, PartnerDeal, ThemeSettings, Vehicle, Booking, BookingType } from './types';
 import { Chat } from './components/Chat';
 import { AdminPanel } from './components/AdminPanel';
-import { AtSymbolIcon, CameraIcon, MapPinIcon, ReceiptIcon, MusicNoteIcon, TicketIcon, GiftIcon, CrownIcon, CogIcon, CloseIcon, VideoCameraIcon, UsersIcon, LogoutIcon, QrCodeIcon, CalendarDaysIcon, ViewfinderCircleIcon, PaintBrushIcon, KeyIcon, CreditCardIcon, GoogleIcon, FacebookIcon, InstagramIcon, ChatBubbleIcon, ClockIcon, StarIcon } from './components/Icons';
+import { AtSymbolIcon, CameraIcon, MapPinIcon, ReceiptIcon, MusicNoteIcon, TicketIcon, GiftIcon, CrownIcon, CogIcon, CloseIcon, VideoCameraIcon, UsersIcon, LogoutIcon, QrCodeIcon, CalendarDaysIcon, ViewfinderCircleIcon, PaintBrushIcon, KeyIcon, CreditCardIcon, GoogleIcon, FacebookIcon, InstagramIcon, ChatBubbleIcon, ListBulletIcon, PlayCircleIcon } from './components/Icons';
 import { LoginScreen } from './components/LoginScreen';
 import { PartnerDeals } from './components/Deals';
 import { QrCodeModal } from './components/QrCodeModal';
@@ -41,151 +41,84 @@ const iconMap: { [key: string]: React.ReactNode } = {
     'Google': <GoogleIcon className="w-5 h-5" />,
     'Facebook': <FacebookIcon className="w-5 h-5" />,
     'Instagram': <InstagramIcon className="w-5 h-5" />,
-    'Clock': <ClockIcon className="w-6 h-6" />,
-    'Star': <StarIcon className="w-6 h-6" />,
-    'BullRide': <StarIcon className="w-6 h-6" />, // Mapping BullRide to StarIcon for now
+    'ListBullet': <ListBulletIcon className="w-6 h-6" />,
+    'PlayCircle': <PlayCircleIcon className="w-6 h-6" />,
 };
 
 // --- Initial Data Definitions ---
 const INITIAL_CHALLENGES: Challenge[] = [
-  {
-    id: 1,
-    venueName: "The Cellar",
-    description: "Check in, play one round of pool, and upload your score to start earning leaderboard points.",
-    address: "205 Broadway, Nashville, TN",
-    points: 150,
-    type: ChallengeType.GPS,
-    iconName: "MapPin",
-    latitude: 36.1613,
-    longitude: -86.7752
+  { 
+      id: 1, 
+      venueName: "SCHOOL OF ROCK", 
+      description: "Complete the ultimate Nashville music pilgrimage by visiting the three locations that shaped American music.", 
+      points: 100, 
+      type: ChallengeType.SCAVENGER_HUNT, 
+      iconName: 'MusicNote', 
+      scavengerHuntItems: ["Ryman Auditorium - birthplace of bluegrass", "Grand Ole Opry - the stage that made country music famous", "Country Music Hall of Fame - the archive of legends"],
+      latitude: 36.1613,
+      longitude: -86.7777,
+      address: "Downtown Nashville"
   },
-  {
-    id: 2,
-    venueName: "Wild Beaver Saloon",
-    description: "Ride the mechanical bull and post a video tagging #NashVegasBeaver to complete the challenge.",
-    address: "212 Commerce St, Nashville, TN",
-    points: 250,
-    type: ChallengeType.Video,
-    iconName: "BullRide",
-    latitude: 36.1625,
-    longitude: -86.7758
+  { 
+      id: 2, 
+      venueName: "GIBSON GUITAR FLIGHT HERO", 
+      description: "Buy the Gibson x Short Mountain Tennessee Whiskey Flight served on a limited-edition Gibson-wood Tennessee paddle (souvenir).", 
+      points: 150, 
+      type: ChallengeType.Receipt, 
+      iconName: 'Receipt', 
+      requiredAmount: 15, // Approx cost of flight
+      latitude: 36.1627, 
+      longitude: -86.7751, 
+      address: "Gibson Garage" 
   },
-  {
-    id: 3,
-    venueName: "Mr. Pizza",
-    description: "Buy any item after midnight and upload your receipt for bonus night-owl points.",
-    address: "221 4th Ave N, Nashville, TN",
-    points: 100,
-    type: ChallengeType.Receipt,
-    iconName: "Receipt",
-    requiredAmount: 1, // Any item implies > 0
-    latitude: 36.1645,
-    longitude: -86.7795
+  { 
+      id: 3, 
+      venueName: "KARAOKE KING / QUEEN", 
+      description: "Perform a song, record a 5-second clip, and tag #KaraokeKingNashville. Your group votes for the winner.", 
+      points: 50, 
+      type: ChallengeType.Social, 
+      iconName: 'VideoCamera', 
+      validationTag: '#KaraokeKingNashville',
+      socialUrl: 'https://instagram.com',
+      latitude: 36.1599, 
+      longitude: -86.7744, 
+      address: "Miss Kelly's" 
   },
-  {
-    id: 4,
-    venueName: "Ms. Kelli’s Karaoke",
-    description: "Check in and snap a selfie on stage to prove you took the mic.",
-    address: "207 Printers Alley, Nashville, TN",
-    points: 200,
-    type: ChallengeType.Social,
-    iconName: "MusicNote",
-    validationTag: "Karaoke", // Placeholder validation tag
-    latitude: 36.1638,
-    longitude: -86.7788
+  { 
+      id: 4, 
+      venueName: "EYE OF THE TIGER", 
+      description: "Highest score in your group wins the Champion Payday. Visit three competition spots.", 
+      points: 75, 
+      type: ChallengeType.SCAVENGER_HUNT, 
+      iconName: 'ListBullet', 
+      scavengerHuntItems: ["Darts at The Cellar", "Indoor Kart Time Trial", "Billiards at Bearded Iris Brewery"],
+      latitude: 36.162, 
+      longitude: -86.778, 
+      address: "Various Locations" 
   },
-  {
-    id: 5,
-    venueName: "MJ Coffee",
-    description: "Take a picture of your drink and tag #MJPerks to unlock your caffeine bonus.",
-    address: "3rd Ave N & Church St, Nashville, TN",
-    points: 75,
-    type: ChallengeType.Social,
-    iconName: "Camera",
-    validationTag: "#MJPerks",
-    latitude: 36.1630,
-    longitude: -86.7775
+  { 
+      id: 5, 
+      venueName: "TOPGOLF TITAN TRIAL", 
+      description: "Hit 30 balls, screenshot your final score, and upload it. Break 150 points -> receive DOUBLE POINTS.", 
+      points: 200, 
+      type: ChallengeType.Photo, 
+      iconName: 'Camera', 
+      latitude: 36.18, 
+      longitude: -86.78, 
+      address: "Topgolf Nashville" 
   },
-  {
-    id: 6,
-    venueName: "The Cellar",
-    description: "Check in and redeem the 2-for-1 drink special before 8 PM to earn points.",
-    address: "205 Broadway, Nashville, TN",
-    points: 125,
-    type: ChallengeType.GPS,
-    iconName: "MapPin",
-    latitude: 36.1613,
-    longitude: -86.7752
+  { 
+      id: 6, 
+      venueName: "HALL OF FAMER", 
+      description: "Highest score in your group wins the Champion Payday. Visit three competition spots.", 
+      points: 100, 
+      type: ChallengeType.SCAVENGER_HUNT, 
+      iconName: 'Crown', 
+      scavengerHuntItems: ["Darts at The Cellar", "Indoor Kart Time Trial", "Topgolf Scoreboard Challenge"],
+      latitude: 36.16, 
+      longitude: -86.77, 
+      address: "Downtown Nashville" 
   },
-  {
-    id: 7,
-    venueName: "Doc Holliday’s",
-    description: "Visit between 4–6 PM to help fill slow hours and earn time-boosted bonus points.",
-    address: "110 Printer’s Alley, Nashville, TN",
-    points: 100,
-    type: ChallengeType.GPS,
-    iconName: "Clock",
-    latitude: 36.1640,
-    longitude: -86.7788
-  },
-  {
-    id: 8,
-    venueName: "Bob's Rock N Bar Roll",
-    description: "Book the Bobbys Rock N Bar Roll and enjoy the best bar crawl in Nashville and get Double points. Scan QR code at end for Points",
-    address: "Starts at 200 Broadway, Nashville, TN",
-    points: 500,
-    type: ChallengeType.QR_CODE,
-    iconName: "Star",
-    qrValidationData: "BOBS_ROCK_N_BAR_ROLL_COMPLETE",
-    latitude: 36.1612,
-    longitude: -86.7750
-  },
-  {
-    id: 10,
-    venueName: "Printer’s Alley",
-    description: "Find the neon sign in the alley and snap a photo with it to earn scavenger points.",
-    address: "Printer’s Alley, Nashville, TN",
-    points: 30,
-    type: ChallengeType.Social,
-    iconName: "Camera",
-    validationTag: "Neon",
-    latitude: 36.1642,
-    longitude: -86.7788
-  },
-  {
-    id: 12,
-    venueName: "Pedal Tavern",
-    description: "Shoot a 5-second clip of your crew pedaling and tag #PedalPower to get credit.",
-    address: "150 Peabody St, Nashville, TN",
-    points: 250,
-    type: ChallengeType.Video,
-    iconName: "Camera",
-    latitude: 36.1585,
-    longitude: -86.7720
-  },
-  {
-    id: 13,
-    venueName: "Doc Holliday’s",
-    description: "Purchase the 2-whiskey sampler and upload the receipt for the Whiskey Legend badge.",
-    address: "110 Printer’s Alley, Nashville, TN",
-    points: 200,
-    type: ChallengeType.Receipt,
-    iconName: "Receipt",
-    requiredAmount: 5, // Approximate minimum
-    latitude: 36.1640,
-    longitude: -86.7788
-  },
-  {
-    id: 14,
-    venueName: "The Cellar",
-    description: "Stay checked in for 30+ minutes and complete the darts or pool mini-game.",
-    address: "205 Broadway, Nashville, TN",
-    points: 150,
-    type: ChallengeType.GPS,
-    iconName: "Clock",
-    latitude: 36.1613,
-    longitude: -86.7752
-  }
 ];
 
 const INITIAL_PERKS: Perk[] = [
@@ -204,34 +137,73 @@ const INITIAL_DEALS: PartnerDeal[] = [
 ];
 
 const INITIAL_VEHICLES: Vehicle[] = [
-    { id: 1, name: 'Cadillac Escalade', description: 'Luxury SUV for comfortable city travel.', imageUrl: 'https://img.sm360.ca/ir/w600/images/newcar/ca/2023/cadillac/escalade/sport-platinum/suv/exteriorColors/2023_cadillac_escalade_sport-platinum_032.png', capacity: 6, type: 'SUV', iCalUrl: 'https://calendar.google.com/calendar/ical/example%40gmail.com/public/basic.ics', quickRideBaseFare: 75, tourHourlyRate: 150, stripePaymentLink: 'https://buy.stripe.com/test_7sI6r1c3v5J0e4g000' },
-    { id: 2, name: 'The Rockstar Limo', description: 'The ultimate party on wheels. Fully loaded.', imageUrl: 'https://www.crystalcoach.com/wp-content/uploads/2021/01/200-inch-white-cadillac-escalade-limo.png', capacity: 14, type: 'Party Bus', iCalUrl: 'https://calendar.google.com/calendar/ical/example2%40gmail.com/public/basic.ics', quickRideBaseFare: 200, tourHourlyRate: 300, stripePaymentLink: 'https://buy.stripe.com/test_7sI6r1c3v5J0e4g000' },
+    { 
+        id: 1, 
+        name: 'The Pink Vintage', 
+        description: 'Broadway Drop Off & Pick Up. A classic pink roadster perfect for making an entrance.', 
+        imageUrl: 'https://images.unsplash.com/photo-1552519507-da8b1227facf?q=80&w=800&auto=format&fit=crop', 
+        capacity: 7, 
+        type: 'Sedan', 
+        iCalUrl: 'https://calendar.google.com/calendar/ical/example%40gmail.com/public/basic.ics', 
+        quickRideBaseFare: 30, 
+        tourHourlyRate: 120, 
+        stripePaymentLink: 'https://buy.stripe.com/test_7sI6r1c3v5J0e4g000' 
+    },
+    { 
+        id: 2, 
+        name: 'Teal Touring Car', 
+        description: 'Self-guided tour around Nashville. Go at your own pace with your crew.', 
+        imageUrl: 'https://images.unsplash.com/photo-1532974297617-c0f05fe48bff?q=80&w=800&auto=format&fit=crop', 
+        capacity: 7, 
+        type: 'SUV', 
+        iCalUrl: 'https://calendar.google.com/calendar/ical/example2%40gmail.com/public/basic.ics', 
+        quickRideBaseFare: 30, 
+        tourHourlyRate: 120, 
+        stripePaymentLink: 'https://buy.stripe.com/test_7sI6r1c3v5J0e4g000' 
+    },
+    { 
+        id: 3, 
+        name: 'Midnight Classic Coach', 
+        description: 'Perfect for larger groups (8-12). Choose any 1.5 hour guided tour.', 
+        imageUrl: 'https://images.unsplash.com/photo-1495360019602-e001921678fe?q=80&w=800&auto=format&fit=crop', 
+        capacity: 12, 
+        type: 'Party Bus', 
+        iCalUrl: 'https://calendar.google.com/calendar/ical/example3%40gmail.com/public/basic.ics', 
+        quickRideBaseFare: 50, 
+        tourHourlyRate: 160, 
+        stripePaymentLink: 'https://buy.stripe.com/test_7sI6r1c3v5J0e4g000' 
+    }
 ];
 
 const DEFAULT_THEME_SETTINGS: ThemeSettings = {
-    headerText: 'Rockstar Pass',
-    subHeaderText: 'Your Backstage Pass to the City',
-    primaryColor: '#a855f7',
-    secondaryColor: '#22d3ee',
-    fontFamily: "'Inter', sans-serif",
+    headerText: 'Rockstar Hospitality Pass',
+    subHeaderText: 'Your All-Access Backstage Pass to Nashville',
+    primaryColor: '#a855f7', // Purple - Rockstar Default
+    secondaryColor: '#ec4899', // Pink - Rockstar Default
+    fontFamily: "'Inter', sans-serif", // Standard App Font
     backgroundImage: '',
 };
 
 const INITIAL_USERS: User[] = [
-    { id: 1, email: 'admin@rockstar.app', password: 'admin', role: Role.Admin, points: 0, completedChallengeIds: new Set() },
-    { id: 2, email: 'ariel@guest.app', role: Role.Guest, points: 70, completedChallengeIds: new Set([1, 2]) },
-    { id: 3, email: 'devon@guest.app', role: Role.Guest, points: 100, completedChallengeIds: new Set([1, 3, 4]) },
-    { id: 4, email: 'sabrina@guest.app', role: Role.Guest, points: 20, completedChallengeIds: new Set([1]) },
+    { id: 1, email: 'admin@rockstar.app', password: 'admin', role: Role.Admin, points: 0, completedChallengeIds: new Set(), scavengerHuntProgress: {} },
+    { id: 2, email: 'ariel@guest.app', role: Role.Guest, points: 70, completedChallengeIds: new Set([1, 2]), scavengerHuntProgress: {} },
+    { id: 3, email: 'devon@guest.app', role: Role.Guest, points: 100, completedChallengeIds: new Set([1, 3, 4]), scavengerHuntProgress: {} },
+    { id: 4, email: 'sabrina@guest.app', role: Role.Guest, points: 20, completedChallengeIds: new Set([1]), scavengerHuntProgress: {} },
 ];
 
 const ALL_RANKS: UserRank[] = [
     { name: 'Starving Artist', minPoints: 0, color: '#94a3b8' },
     { name: 'Opening Act', minPoints: 50, color: '#22d3ee' },
-    { name: 'Headliner', minPoints: 150, color: '#a855f7' },
+    { name: 'Headliner', minPoints: 150, color: '#d4af37' },
     { name: 'Living Legend', minPoints: 300, color: '#f59e0b' },
 ];
 
 // --- Data Management ---
+const STORAGE_KEY_CONFIG = 'rockstar_app_config_v5'; // Incremented to v5 to apply branding revert
+const LEGACY_STORAGE_KEYS = ['rockstar_app_config_v4', 'rockstar_app_config_v3', 'rockstar_app_config_v2', 'rockstar_app_config', 'app_config']; 
+const STORAGE_KEY_USERS = 'rockstar_users';
+const STORAGE_KEY_BOOKINGS = 'rockstar_bookings';
+
 const userReviver = (key: any, value: any) => {
     if (key === 'completedChallengeIds') return new Set(value);
     return value;
@@ -251,11 +223,30 @@ const INITIAL_APP_CONFIG = { challenges: INITIAL_CHALLENGES, perks: INITIAL_PERK
 
 const getInitialAppConfig = () => {
     try {
-        const item = window.localStorage.getItem('rockstar_app_config');
+        // 1. Try V5 (Current)
+        const item = window.localStorage.getItem(STORAGE_KEY_CONFIG);
         if (item) {
             const savedConfig = JSON.parse(item);
             return { ...INITIAL_APP_CONFIG, ...savedConfig };
         }
+
+        // 2. Try Migration from Legacy Keys
+        for (const key of LEGACY_STORAGE_KEYS) {
+             const legacyItem = window.localStorage.getItem(key);
+             if (legacyItem) {
+                 console.log(`Migrating configuration from legacy key: ${key}`);
+                 const legacyConfig = JSON.parse(legacyItem);
+                 // Migrate data but enforce the Reverted Theme and New Vehicles
+                 return { 
+                     ...INITIAL_APP_CONFIG, 
+                     ...legacyConfig, 
+                     vehicles: INITIAL_VEHICLES, 
+                     theme: DEFAULT_THEME_SETTINGS 
+                 };
+             }
+        }
+
+        // 3. Fallback to code defaults
         return INITIAL_APP_CONFIG;
     } catch (error) {
         console.error(`Error reading app config from localStorage:`, error);
@@ -272,8 +263,8 @@ const App: React.FC = () => {
     const [vehicles, setVehicles] = useState<Vehicle[]>(initialConfig.vehicles);
     const [themeSettings, setThemeSettings] = useState<ThemeSettings>(initialConfig.theme);
     
-    const [users, setUsers] = useState<User[]>(() => getInitialData('rockstar_users', INITIAL_USERS, userReviver));
-    const [bookings, setBookings] = useState<Booking[]>(() => getInitialData('rockstar_bookings', []));
+    const [users, setUsers] = useState<User[]>(() => getInitialData(STORAGE_KEY_USERS, INITIAL_USERS, userReviver));
+    const [bookings, setBookings] = useState<Booking[]>(() => getInitialData(STORAGE_KEY_BOOKINGS, []));
     
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [validatingChallengeId, setValidatingChallengeId] = useState<number | null>(null);
@@ -287,26 +278,64 @@ const App: React.FC = () => {
     const [activeTab, setActiveTab] = useState('map');
 
     // --- Data Persistence ---
+    // Save Users and Bookings automatically (Low size data)
     useEffect(() => {
         try {
             const userReplacer = (key: any, value: any) => {
                 if(key === 'completedChallengeIds') return Array.from(value);
                 return value;
             }
-            localStorage.setItem('rockstar_users', JSON.stringify(users, userReplacer));
-            localStorage.setItem('rockstar_bookings', JSON.stringify(bookings));
-
-            const appConfig = { challenges, perks, deals, vehicles, theme: themeSettings };
-            localStorage.setItem('rockstar_app_config', JSON.stringify(appConfig));
+            localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users, userReplacer));
+            localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(bookings));
         } catch (error) {
-            console.error("Failed to save data to localStorage:", error);
-            if (error instanceof DOMException && error.name === 'QuotaExceededError') {
-                alert("Storage quota exceeded! Your changes were NOT saved. Please use smaller images or clear browser data.");
-            } else {
-                 alert("Failed to save changes. Please check your browser settings.");
+             console.error("Failed to auto-save users/bookings:", error);
+        }
+    }, [users, bookings]);
+
+    // Robust Config Save Logic
+    const saveConfigToStorage = useCallback((config: typeof INITIAL_APP_CONFIG, isManual: boolean = false) => {
+        try {
+            localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(config));
+            if (isManual) alert("Configuration saved successfully!");
+        } catch (error) {
+            console.warn("Storage full. Attempting to save without heavy images...");
+            
+            // Fail-safe: Strip images and try saving text-only data
+            const leanConfig = {
+                ...config,
+                theme: { ...config.theme, backgroundImage: '' },
+                vehicles: config.vehicles.map(v => ({ ...v, imageUrl: '' }))
+            };
+
+            try {
+                localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(leanConfig));
+                const msg = "Storage quota exceeded! Saved TEXT changes only. Images were removed to preserve your data.";
+                console.warn(msg);
+                if (isManual) alert(msg);
+            } catch (retryError) {
+                const msg = "Critical Error: Storage completely full. Cannot save any changes. Please clear browser data.";
+                console.error(msg, retryError);
+                if (isManual) alert(msg);
             }
         }
-    }, [users, challenges, perks, deals, vehicles, bookings, themeSettings]);
+    }, []);
+
+    // Auto-save Config (Debounced or direct)
+    // We run this to ensure small tweaks (like changing a title) are saved even if user forgets to click "Save"
+    useEffect(() => {
+        const config = { challenges, perks, deals, vehicles, theme: themeSettings };
+        // We use a timeout to avoid spamming localStorage on every keystroke
+        const timer = setTimeout(() => {
+             saveConfigToStorage(config, false);
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, [challenges, perks, deals, vehicles, themeSettings, saveConfigToStorage]);
+
+
+    const handleManualSaveConfig = useCallback(() => {
+        const appConfig = { challenges, perks, deals, vehicles, theme: themeSettings };
+        saveConfigToStorage(appConfig, true);
+    }, [challenges, perks, deals, vehicles, themeSettings, saveConfigToStorage]);
 
     const handleSocialLogin = useCallback((email: string) => {
       let user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.role === Role.Guest);
@@ -319,6 +348,7 @@ const App: React.FC = () => {
           role: Role.Guest,
           points: 0,
           completedChallengeIds: new Set(),
+          scavengerHuntProgress: {},
         };
         setUsers(prev => [...prev, newUser]);
         setCurrentUser(newUser);
@@ -350,6 +380,45 @@ const App: React.FC = () => {
         setUsers(prevUsers => prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u));
     }, [currentUser]);
 
+    const handleScavengerItemComplete = useCallback((challengeId: number, itemIndex: number, challenge: Challenge) => {
+        if (!currentUser) return;
+        
+        const currentProgress = currentUser.scavengerHuntProgress || {};
+        const challengeProgress = currentProgress[challengeId] || [];
+        
+        // If already completed this item, ignore
+        if (challengeProgress.includes(itemIndex)) return;
+
+        const newChallengeProgress = [...challengeProgress, itemIndex];
+        const newProgress = {
+            ...currentProgress,
+            [challengeId]: newChallengeProgress
+        };
+        
+        let updatedUser = {
+            ...currentUser,
+            scavengerHuntProgress: newProgress
+        };
+
+        // Check if all items are found
+        const totalItems = challenge.scavengerHuntItems?.length || 0;
+        if (newChallengeProgress.length >= totalItems) {
+            // Mark entire challenge as complete and award points
+             updatedUser = {
+                ...updatedUser,
+                points: updatedUser.points + challenge.points,
+                completedChallengeIds: new Set(updatedUser.completedChallengeIds).add(challengeId),
+            };
+            alert(`Awesome! You've found everything in the "${challenge.venueName}" hunt!`);
+        } else {
+             alert(`Great find! You have ${totalItems - newChallengeProgress.length} items left to find.`);
+        }
+
+        setCurrentUser(updatedUser);
+        setUsers(prevUsers => prevUsers.map(u => u.id === updatedUser.id ? updatedUser : u));
+
+    }, [currentUser]);
+
     const fileToBase64 = (file: File): Promise<string> =>
       new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -358,12 +427,14 @@ const App: React.FC = () => {
         reader.onerror = error => reject(error);
       });
 
-    const handleImageValidation = useCallback(async (challenge: Challenge, imageFile: File) => {
+    const handleImageValidation = useCallback(async (challenge: Challenge, imageFile: File, scavengerItemIndex?: number, scavengerItemDescription?: string) => {
       if (!imageFile || validatingChallengeId) return;
       setValidatingChallengeId(challenge.id);
       let promptText = '';
       
-      if (challenge.type === ChallengeType.Receipt) {
+      if (scavengerItemDescription) {
+          promptText = `Look at this photo. Does it contain "${scavengerItemDescription}"? Respond with only 'YES' or 'NO'.`;
+      } else if (challenge.type === ChallengeType.Receipt) {
         if (!challenge.requiredAmount) {
           console.error("Receipt challenge is missing 'requiredAmount'.");
           alert("Configuration error for this challenge. Please contact support.");
@@ -388,10 +459,14 @@ const App: React.FC = () => {
           contents: { parts: [{ inlineData: { mimeType: imageFile.type, data: base64Image } }, { text: promptText }] }
         });
         if (response.text.trim().toUpperCase() === 'YES') {
-          handleCompleteChallenge(challenge.id, challenge.points);
-          alert('Validation successful! Points awarded.');
+          if (scavengerItemIndex !== undefined) {
+             handleScavengerItemComplete(challenge.id, scavengerItemIndex, challenge);
+          } else {
+             handleCompleteChallenge(challenge.id, challenge.points);
+             alert('Validation successful! Points awarded.');
+          }
         } else {
-          alert('Validation failed. Please try again.');
+          alert('Validation failed. The image did not match the requirements. Please try again.');
         }
       } catch (error) {
         console.error("Error validating image:", error);
@@ -399,7 +474,7 @@ const App: React.FC = () => {
       } finally {
         setValidatingChallengeId(null);
       }
-    }, [handleCompleteChallenge, validatingChallengeId]);
+    }, [handleCompleteChallenge, handleScavengerItemComplete, validatingChallengeId]);
 
     const handleDealScan = (dealId: number) => setDeals(prev => prev.map(d => d.id === dealId ? { ...d, scanCount: (d.scanCount || 0) + 1 } : d));
     const handleQrScanStart = (challenge: Challenge) => { setScanningChallenge(challenge); setIsScannerOpen(true); };
@@ -469,7 +544,7 @@ const App: React.FC = () => {
         <div style={appStyle} className={`min-h-screen ${!themeSettings.backgroundImage ? 'bg-slate-900' : ''} text-slate-100`}>
              <div className={`min-h-screen flex flex-col ${themeSettings.backgroundImage ? 'bg-slate-900/50 backdrop-blur-sm' : ''}`}>
                  {isAdminView ? (
-                    <div className="p-4 md:p-8"><AdminPanel users={users} setUsers={setUsers} challenges={challenges} setChallenges={setChallenges} perks={perks} setPerks={setPerks} deals={deals} setDeals={setDeals} vehicles={vehicles} setVehicles={setVehicles} themeSettings={themeSettings} setThemeSettings={setThemeSettings} onExit={() => setIsAdminView(false)} onLogout={handleLogout} iconMap={iconMap}/></div>
+                    <div className="p-4 md:p-8"><AdminPanel users={users} setUsers={setUsers} challenges={challenges} setChallenges={setChallenges} perks={perks} setPerks={setPerks} deals={deals} setDeals={setDeals} vehicles={vehicles} setVehicles={setVehicles} themeSettings={themeSettings} setThemeSettings={setThemeSettings} onExit={() => setIsAdminView(false)} onLogout={handleLogout} iconMap={iconMap} onSave={handleManualSaveConfig} /></div>
                  ) : (
                     <>
                         <header className="flex-shrink-0 flex justify-between items-center p-4 sticky top-0 z-20 bg-slate-900/80 backdrop-blur-sm">
